@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Naveen M — Cybersecurity Job Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0A0E1A;--surface:#111827;--surface2:#1C2333;--surface3:#232D42;
+  --border:#2A3350;--border2:#3A4A6B;
+  --text:#E8EDF8;--muted:#7A8BAD;--dim:#4A5A7A;
+  --green:#10B981;--green-bg:rgba(16,185,129,.12);--green-border:rgba(16,185,129,.3);
+  --blue:#3B82F6;--blue-bg:rgba(59,130,246,.12);--blue-border:rgba(59,130,246,.3);
+  --yellow:#F59E0B;--yellow-bg:rgba(245,158,11,.12);--yellow-border:rgba(245,158,11,.3);
+  --red:#EF4444;--red-bg:rgba(239,68,68,.12);--red-border:rgba(239,68,68,.3);
+  --purple:#8B5CF6;--purple-bg:rgba(139,92,246,.12);--purple-border:rgba(139,92,246,.3);
+  --cyan:#06B6D4;--cyan-bg:rgba(6,182,212,.12);
+  --font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;
+  --radius:10px;--radius-lg:14px;--radius-xl:18px;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;line-height:1.5}
+a{color:inherit;text-decoration:none}
+
+.layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sb-logo{display:flex;align-items:center;gap:10px;padding:0 8px 20px;border-bottom:1px solid var(--border);margin-bottom:8px}
+.sb-logo-icon{width:38px;height:38px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.sb-logo-text{font-size:14px;font-weight:600}
+.sb-logo-sub{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.sb-section{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;padding:10px 8px 4px}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:var(--radius);cursor:pointer;font-size:13px;color:var(--muted);transition:all .15s;border:1px solid transparent}
+.sb-item:hover{background:var(--surface2);color:var(--text)}
+.sb-item.active{background:var(--green-bg);color:var(--green);border-color:var(--green-border);font-weight:500}
+.sb-count{margin-left:auto;background:var(--surface3);color:var(--muted);font-size:11px;font-family:var(--mono);padding:1px 7px;border-radius:99px}
+.sb-item.active .sb-count{background:rgba(16,185,129,.2);color:var(--green)}
+.sb-profile{margin-top:auto;padding:12px;background:var(--surface2);border-radius:var(--radius);border:1px solid var(--border)}
+.sb-profile-name{font-size:13px;font-weight:600}
+.sb-profile-email{font-size:11px;color:var(--muted);margin-top:2px;font-family:var(--mono)}
+
+/* MAIN */
+.main{padding:28px 32px;overflow-y:auto;min-height:100vh}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;gap:12px;flex-wrap:wrap}
+.topbar h1{font-size:20px;font-weight:700}
+.topbar-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.currency-toggle{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.cur-btn{padding:7px 14px;font-size:12px;font-family:var(--mono);font-weight:600;cursor:pointer;border:none;background:none;color:var(--muted);transition:all .15s}
+.cur-btn.active{background:var(--green-bg);color:var(--green)}
+.btn{padding:8px 16px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:var(--font);font-size:13px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;font-weight:500}
+.btn:hover{background:var(--surface3);border-color:var(--border2)}
+.btn-green{background:var(--green-bg);border-color:var(--green-border);color:var(--green)}
+.btn-green:hover{background:rgba(16,185,129,.2)}
+.btn-blue{background:var(--blue-bg);border-color:var(--blue-border);color:var(--blue)}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;cursor:pointer;transition:all .2s}
+.stat-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.stat-card.active{border-color:var(--green);box-shadow:0 0 0 1px var(--green)}
+.stat-n{font-size:26px;font-weight:700;font-family:var(--mono);line-height:1}
+.stat-l{font-size:11px;color:var(--muted);margin-top:5px}
+
+/* PROGRESS */
+.progress-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:24px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px}
+.prow{display:flex;flex-direction:column;gap:6px}
+.prow-top{display:flex;justify-content:space-between}
+.prow-label{font-size:12px;color:var(--muted)}
+.prow-pct{font-size:13px;font-weight:600;font-family:var(--mono)}
+.ptrack{height:6px;background:var(--surface3);border-radius:99px;overflow:hidden}
+.pfill{height:100%;border-radius:99px;transition:width .6s ease}
+
+/* OPENINGS PANEL */
+.openings-panel{background:var(--surface);border:1px solid var(--yellow-border);border-radius:var(--radius-lg);margin-bottom:28px;overflow:hidden}
+.openings-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--yellow-bg);border-bottom:1px solid var(--yellow-border)}
+.openings-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--yellow)}
+.openings-count-pill{font-size:12px;color:var(--yellow);background:rgba(245,158,11,.15);border:1px solid var(--yellow-border);padding:3px 10px;border-radius:99px;font-family:var(--mono)}
+.openings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.opening-card{padding:18px 20px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);transition:background .15s}
+.opening-card:hover{background:var(--surface2)}
+.oc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.oc-co{font-size:14px;font-weight:600}
+.oc-role{font-size:12px;color:var(--muted);margin-top:3px}
+.match-ring{width:44px;height:44px;border-radius:50%;border:2.5px solid;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:var(--mono);flex-shrink:0}
+.oc-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.oc-type-pill{font-size:11px;padding:2px 9px;border-radius:99px;font-weight:600;background:var(--yellow-bg);color:var(--yellow)}
+.oc-salary{font-size:12px;color:var(--muted);font-family:var(--mono)}
+.oc-notes{font-size:12px;color:var(--dim);margin-bottom:12px;line-height:1.5}
+.apply-now-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:9px 14px;border-radius:var(--radius);border:1px solid var(--green-border);background:var(--green-bg);color:var(--green);font-size:12px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .15s;text-decoration:none}
+.apply-now-btn:hover{background:rgba(16,185,129,.22);border-color:var(--green)}
+.no-link-msg{text-align:center;font-size:12px;color:var(--dim);padding:6px}
+
+/* TOOLBAR */
+.toolbar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.search-wrap{flex:1;min-width:160px;position:relative}
+.search-wrap input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:9px 14px 9px 36px;color:var(--text);font-family:var(--font);font-size:13px;outline:none;transition:border .2s}
+.search-wrap input:focus{border-color:var(--green)}
+.search-wrap input::placeholder{color:var(--dim)}
+.si{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:15px}
+select{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:9px 12px;color:var(--text);font-family:var(--font);font-size:13px;outline:none;cursor:pointer}
+select:focus{border-color:var(--green)}
+
+/* SECTION LABEL */
+.section-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* JOB CARDS */
+.jobs-list{display:flex;flex-direction:column;gap:10px}
+.job-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:border-color .15s}
+.job-card:hover{border-color:var(--border2)}
+.jc-main{display:flex;align-items:flex-start;gap:14px;padding:16px 18px}
+.jc-avatar{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;font-family:var(--mono);flex-shrink:0;letter-spacing:0}
+.jc-info{flex:1;min-width:0}
+.jc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.jc-co{font-size:15px;font-weight:600}
+.jc-role{font-size:12px;color:var(--muted);margin-top:2px}
+.jc-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+.status-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:12px;font-weight:600}
+.type-tag{font-size:11px;color:var(--dim);padding:2px 8px;background:var(--surface2);border-radius:99px}
+.jc-meta{display:flex;align-items:center;gap:14px;margin-top:9px;flex-wrap:wrap}
+.meta{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)}
+.match-bar-wrap{display:flex;align-items:center;gap:7px}
+.match-mini{width:56px;height:4px;background:var(--surface3);border-radius:99px;overflow:hidden}
+.match-fill{height:100%;border-radius:99px}
+.match-val{font-size:12px;font-weight:700;font-family:var(--mono)}
+.jc-actions{display:flex;border-top:1px solid var(--border)}
+.jc-act{flex:1;padding:9px;font-size:12px;border:none;background:none;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;font-family:var(--font);transition:all .15s;border-right:1px solid var(--border)}
+.jc-act:last-child{border-right:none}
+.jc-act:hover{background:var(--surface2);color:var(--text)}
+.jc-act.apply-act{color:var(--green);font-weight:500}
+.jc-act.apply-act:hover{background:var(--green-bg)}
+.jc-act.mail-act:hover{background:var(--blue-bg);color:var(--blue)}
+.jc-act.del-act:hover{background:var(--red-bg);color:var(--red)}
+.no-results{text-align:center;padding:48px;color:var(--muted);font-size:13px}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:500;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-xl);width:560px;max-width:96vw;max-height:92vh;overflow-y:auto}
+.modal-head{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--surface);z-index:1}
+.modal-head h2{font-size:16px;font-weight:600}
+.modal-close{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;padding:2px 8px;border-radius:6px}
+.modal-close:hover{background:var(--surface2);color:var(--text)}
+.modal-body{padding:20px 24px}
+.frow{margin-bottom:14px}
+.frow label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em;font-weight:500}
+.frow input,.frow select,.frow textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 13px;color:var(--text);font-family:var(--font);font-size:14px;outline:none;transition:border .2s}
+.frow input:focus,.frow select:focus,.frow textarea:focus{border-color:var(--green)}
+.frow textarea{resize:vertical;min-height:72px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-foot{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
+.btn-save{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);padding:9px 22px;border-radius:var(--radius);font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer}
+.btn-save:hover{background:rgba(16,185,129,.22)}
+.btn-cancel{background:none;border:1px solid var(--border);color:var(--muted);padding:9px 18px;border-radius:var(--radius);font-family:var(--font);font-size:14px;cursor:pointer}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface2);border:1px solid var(--green-border);border-radius:var(--radius);padding:11px 18px;font-size:13px;color:var(--green);z-index:999;transform:translateY(60px);opacity:0;transition:all .3s;pointer-events:none}
+.toast.show{transform:translateY(0);opacity:1}
+
+@media(max-width:960px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .stats{grid-template-columns:repeat(3,1fr)}
+  .progress-wrap{grid-template-columns:1fr}
+  .main{padding:20px 16px}
+}
+@media(max-width:580px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .fgrid{grid-template-columns:1fr}
+  .topbar-right{gap:6px}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-icon">🛡️</div>
+    <div>
+      <div class="sb-logo-text">Naveen M</div>
+      <div class="sb-logo-sub">Job Tracker</div>
+    </div>
+  </div>
+
+  <div class="sb-section">Filter by status</div>
+  <div class="sb-item active" onclick="sideFilter('all')" id="sb-all">📋 All <span class="sb-count" id="sbc-all">0</span></div>
+  <div class="sb-item" onclick="sideFilter('Want to Apply')" id="sb-want">⭐ Want to apply <span class="sb-count" id="sbc-want">0</span></div>
+  <div class="sb-item" onclick="sideFilter('Applied')" id="sb-applied">📨 Applied <span class="sb-count" id="sbc-applied">0</span></div>
+  <div class="sb-item" onclick="sideFilter('Interview')" id="sb-interview">🎯 Interview <span class="sb-count" id="sbc-interview">0</span></div>
+  <div class="sb-item" onclick="sideFilter('Offer')" id="sb-offer">🎉 Offer <span class="sb-count" id="sbc-offer">0</span></div>
+  <div class="sb-item" onclick="sideFilter('Rejected')" id="sb-rejected">❌ Rejected <span class="sb-count" id="sbc-rejected">0</span></div>
+
+  <div class="sb-section">Actions</div>
+  <div class="sb-item" onclick="openModal()">➕ Add application</div>
+  <div class="sb-item" onclick="exportCSV()">📤 Export CSV</div>
+  <div class="sb-item" onclick="mailMe()">✉️ Quick mail</div>
+
+  <div class="sb-profile">
+    <div class="sb-profile-name">Naveen M</div>
+    <div class="sb-profile-email">naveenmknmurugan@gmail.com</div>
+    <div style="margin-top:8px;font-size:11px;color:var(--muted)">🇸🇬 Open to Singapore roles</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <div class="topbar">
+    <h1>Job &amp; Internship Tracker</h1>
+    <div class="topbar-right">
+      <div class="currency-toggle">
+        <button class="cur-btn active" id="cur-SGD" onclick="setCurrency('SGD')">SGD</button>
+        <button class="cur-btn" id="cur-INR" onclick="setCurrency('INR')">INR</button>
+        <button class="cur-btn" id="cur-USD" onclick="setCurrency('USD')">USD</button>
+      </div>
+      <button class="btn btn-blue" onclick="mailMe()">✉ Mail</button>
+      <button class="btn btn-green" onclick="openModal()">+ Add</button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card active" onclick="sideFilter('all')" id="sc-all"><div class="stat-n" id="sn-total">0</div><div class="stat-l">Total</div></div>
+    <div class="stat-card" onclick="sideFilter('Applied')" id="sc-applied"><div class="stat-n" style="color:var(--green)" id="sn-applied">0</div><div class="stat-l">Applied</div></div>
+    <div class="stat-card" onclick="sideFilter('Want to Apply')" id="sc-want"><div class="stat-n" style="color:var(--yellow)" id="sn-want">0</div><div class="stat-l">Want to apply</div></div>
+    <div class="stat-card" onclick="sideFilter('Interview')" id="sc-interview"><div class="stat-n" style="color:var(--blue)" id="sn-interview">0</div><div class="stat-l">Interview</div></div>
+    <div class="stat-card" onclick="sideFilter('Offer')" id="sc-offer"><div class="stat-n" style="color:var(--cyan)" id="sn-offer">0</div><div class="stat-l">Offer</div></div>
+    <div class="stat-card" onclick="sideFilter('Rejected')" id="sc-rejected"><div class="stat-n" style="color:var(--red)" id="sn-rejected">0</div><div class="stat-l">Rejected</div></div>
+  </div>
+
+  <!-- PROGRESS BARS -->
+  <div class="progress-wrap">
+    <div class="prow">
+      <div class="prow-top"><span class="prow-label">Application rate</span><span class="prow-pct" style="color:var(--green)" id="pp-app">0%</span></div>
+      <div class="ptrack"><div class="pfill" id="pf-app" style="background:var(--green);width:0%"></div></div>
+    </div>
+    <div class="prow">
+      <div class="prow-top"><span class="prow-label">Interview rate</span><span class="prow-pct" style="color:var(--blue)" id="pp-int">0%</span></div>
+      <div class="ptrack"><div class="pfill" id="pf-int" style="background:var(--blue);width:0%"></div></div>
+    </div>
+    <div class="prow">
+      <div class="prow-top"><span class="prow-label">Avg match score</span><span class="prow-pct" style="color:var(--yellow)" id="pp-match">0%</span></div>
+      <div class="ptrack"><div class="pfill" id="pf-match" style="background:var(--yellow);width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- OPENINGS PANEL — Want to Apply -->
+  <div class="openings-panel">
+    <div class="openings-header">
+      <div class="openings-title">⭐ Openings to apply — sorted by match</div>
+      <span class="openings-count-pill" id="openings-count">0 openings</span>
+    </div>
+    <div class="openings-grid" id="openingsGrid"></div>
+  </div>
+
+  <!-- SEARCH + FILTER -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="si">🔍</span>
+      <input id="qSearch" type="text" placeholder="Search company, role, notes…" oninput="render()">
+    </div>
+    <select id="qStatus" onchange="render()">
+      <option value="all">All status</option>
+      <option>Applied</option><option>Want to Apply</option>
+      <option>Interview</option><option>Offer</option><option>Rejected</option>
+    </select>
+    <select id="qType" onchange="render()">
+      <option value="all">All types</option>
+      <option>Full-time</option><option>Internship</option>
+    </select>
+    <select id="qSort" onchange="render()">
+      <option value="match">Best match first</option>
+      <option value="date">Newest first</option>
+      <option value="az">Company A–Z</option>
+    </select>
+  </div>
+
+  <div class="section-label" id="listLabel">All applications</div>
+  <div class="jobs-list" id="jobsList"></div>
+  <div class="no-results" id="noResults" style="display:none">No applications match your search.</div>
+
+</main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="modalTitle">Add application</h2>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="fId">
+      <div class="fgrid">
+        <div class="frow"><label>Company *</label><input id="fCo" placeholder="e.g. Ensign InfoSecurity"></div>
+        <div class="frow"><label>Role *</label><input id="fRole" placeholder="e.g. SOC Analyst"></div>
+      </div>
+      <div class="fgrid">
+        <div class="frow"><label>Type</label><select id="fType"><option>Full-time</option><option>Internship</option></select></div>
+        <div class="frow"><label>Status</label>
+          <select id="fStatus"><option>Want to Apply</option><option>Applied</option><option>Interview</option><option>Offer</option><option>Rejected</option></select>
+        </div>
+      </div>
+      <div class="frow"><label>Apply link (URL)</label><input id="fLink" type="url" placeholder="https://careers.company.com/role"></div>
+      <div class="fgrid">
+        <div class="frow"><label>Salary — SGD/month</label><input id="fSalary" type="number" placeholder="5000"></div>
+        <div class="frow"><label>Match % (0–100)</label><input id="fMatch" type="number" min="0" max="100" placeholder="85"></div>
+      </div>
+      <div class="fgrid">
+        <div class="frow"><label>Date applied</label><input id="fDate" type="date"></div>
+        <div class="frow"><label>Follow-up date</label><input id="fFollowup" type="date"></div>
+      </div>
+      <div class="frow"><label>Recruiter email</label><input id="fRecruiter" type="email" placeholder="hr@company.com"></div>
+      <div class="frow"><label>Notes</label><textarea id="fNotes" placeholder="Priority, contacts, interview prep notes…"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveEntry()">Save application</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let jobs=[
+  {id:1,co:'Ensign InfoSecurity',role:'SOC Analyst',type:'Full-time',link:'https://ensigninfosecurity.com/careers',status:'Applied',date:'2025-01-10',followup:'2025-01-24',recruiter:'recruit@ensign.com',salary:5000,match:90,notes:'Top priority SG firm'},
+  {id:2,co:'ST Engineering',role:'Cybersecurity Engineer',type:'Full-time',link:'https://careers.stengg.com',status:'Want to Apply',date:'',followup:'',recruiter:'',salary:6000,match:85,notes:'Defense + aerospace'},
+  {id:3,co:'IMDA Singapore',role:'Security Analyst Intern',type:'Internship',link:'https://imda.gov.sg/careers',status:'Applied',date:'2025-01-12',followup:'2025-01-26',recruiter:'hr@imda.gov.sg',salary:1800,match:88,notes:'Govt internship'},
+  {id:4,co:'Cisco Singapore',role:'Cybersecurity Intern',type:'Internship',link:'https://jobs.cisco.com',status:'Interview',date:'2025-01-05',followup:'2025-01-20',recruiter:'cisco.recruit@cisco.com',salary:2200,match:82,notes:'Technical round pending'},
+  {id:5,co:'Palo Alto Networks',role:'Jr. Security Analyst',type:'Full-time',link:'https://jobs.paloaltonetworks.com',status:'Rejected',date:'2024-12-20',followup:'',recruiter:'',salary:7000,match:75,notes:'Reapply in 6 months'},
+  {id:6,co:'GovTech Singapore',role:'Cybersecurity Associate',type:'Full-time',link:'https://careers.tech.gov.sg',status:'Want to Apply',date:'',followup:'',recruiter:'',salary:5000,match:92,notes:'Public sector, EP eligible'},
+  {id:7,co:'Darktrace',role:'Threat Analyst',type:'Full-time',link:'https://darktrace.com/careers',status:'Want to Apply',date:'',followup:'',recruiter:'',salary:6500,match:80,notes:'AI security focus'},
+  {id:8,co:'NCS Group',role:'SOC Engineer',type:'Full-time',link:'https://ncs.co/careers',status:'Applied',date:'2025-01-08',followup:'2025-01-22',recruiter:'talent@ncs.co',salary:5500,match:87,notes:'Follow up end of Jan'},
+  {id:9,co:'Singtel Cyber Security',role:'Penetration Tester',type:'Full-time',link:'https://careers.singtel.com',status:'Want to Apply',date:'',followup:'',recruiter:'',salary:5800,match:89,notes:'VAPT role — strong match'},
+  {id:10,co:'Home Team Science & Tech',role:'Cyber Analyst Intern',type:'Internship',link:'https://www.htx.gov.sg/join-us',status:'Want to Apply',date:'',followup:'',recruiter:'',salary:1600,match:83,notes:'Govt security agency'},
+];
+let nid=11, curFilter='all', editId=null, currency='SGD';
+const FX={SGD:1,INR:62.5,USD:0.74};
+const SYM={SGD:'S$',INR:'₹',USD:'$'};
+const ACOL=[
+  {bg:'rgba(16,185,129,.18)',fg:'#10B981'},
+  {bg:'rgba(59,130,246,.18)',fg:'#3B82F6'},
+  {bg:'rgba(139,92,246,.18)',fg:'#8B5CF6'},
+  {bg:'rgba(245,158,11,.18)',fg:'#F59E0B'},
+  {bg:'rgba(6,182,212,.18)',fg:'#06B6D4'},
+];
+
+function fmtSal(sgd){
+  if(!sgd)return '—';
+  return SYM[currency]+Math.round(sgd*FX[currency]).toLocaleString()+'/mo';
+}
+function setCurrency(c){
+  currency=c;
+  document.querySelectorAll('.cur-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('cur-'+c).classList.add('active');
+  render();
+}
+
+function matchColor(m){
+  if(m>=90)return'var(--green)';
+  if(m>=80)return'var(--blue)';
+  if(m>=70)return'var(--yellow)';
+  return'var(--red)';
+}
+
+function statusStyle(s){
+  const m={
+    Applied:{bg:'var(--green-bg)',border:'var(--green-border)',color:'var(--green)'},
+    'Want to Apply':{bg:'var(--yellow-bg)',border:'var(--yellow-border)',color:'var(--yellow)'},
+    Interview:{bg:'var(--blue-bg)',border:'var(--blue-border)',color:'var(--blue)'},
+    Offer:{bg:'var(--cyan-bg)',border:'rgba(6,182,212,.3)',color:'var(--cyan)'},
+    Rejected:{bg:'var(--red-bg)',border:'var(--red-border)',color:'var(--red)'},
+  };
+  return m[s]||m['Want to Apply'];
+}
+
+function initials(co){return co.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase()}
+
+function updateStats(){
+  const cnt=s=>jobs.filter(j=>j.status===s).length;
+  document.getElementById('sn-total').textContent=jobs.length;
+  document.getElementById('sn-applied').textContent=cnt('Applied');
+  document.getElementById('sn-want').textContent=cnt('Want to Apply');
+  document.getElementById('sn-interview').textContent=cnt('Interview');
+  document.getElementById('sn-offer').textContent=cnt('Offer');
+  document.getElementById('sn-rejected').textContent=cnt('Rejected');
+  document.getElementById('sbc-all').textContent=jobs.length;
+  document.getElementById('sbc-want').textContent=cnt('Want to Apply');
+  document.getElementById('sbc-applied').textContent=cnt('Applied');
+  document.getElementById('sbc-interview').textContent=cnt('Interview');
+  document.getElementById('sbc-offer').textContent=cnt('Offer');
+  document.getElementById('sbc-rejected').textContent=cnt('Rejected');
+
+  const active=cnt('Applied')+cnt('Interview')+cnt('Offer')+cnt('Rejected');
+  const appR=jobs.length?Math.round(active/jobs.length*100):0;
+  const intR=active?Math.round(cnt('Interview')/active*100):0;
+  const avg=jobs.length?Math.round(jobs.reduce((a,j)=>a+(j.match||0),0)/jobs.length):0;
+  document.getElementById('pf-app').style.width=appR+'%';document.getElementById('pp-app').textContent=appR+'%';
+  document.getElementById('pf-int').style.width=intR+'%';document.getElementById('pp-int').textContent=intR+'%';
+  document.getElementById('pf-match').style.width=avg+'%';document.getElementById('pp-match').textContent=avg+'%';
+}
+
+function renderOpenings(){
+  const want=[...jobs].filter(j=>j.status==='Want to Apply').sort((a,b)=>(b.match||0)-(a.match||0));
+  document.getElementById('openings-count').textContent=want.length+' opening'+(want.length!==1?'s':'');
+  const grid=document.getElementById('openingsGrid');
+  if(!want.length){
+    grid.innerHTML='<div style="padding:20px 22px;color:var(--muted);font-size:13px">No pending openings — you\'re all caught up!</div>';
+    return;
+  }
+  grid.innerHTML=want.map(j=>{
+    const mc=matchColor(j.match||0);
+    return `
+    <div class="opening-card">
+      <div class="oc-top">
+        <div>
+          <div class="oc-co">${j.co}</div>
+          <div class="oc-role">${j.role}</div>
+        </div>
+        <div class="match-ring" style="border-color:${mc};color:${mc}">${j.match||0}%</div>
+      </div>
+      <div class="oc-row">
+        <span class="oc-type-pill">${j.type}</span>
+        <span class="oc-salary">${fmtSal(j.salary)}</span>
+      </div>
+      ${j.notes?`<div class="oc-notes">${j.notes}</div>`:''}
+      ${j.link
+        ?`<a class="apply-now-btn" href="${j.link}" target="_blank">🔗 Apply now</a>`
+        :`<div class="no-link-msg">No apply link added yet</div>`}
+    </div>`;
+  }).join('');
+}
+
+function getFiltered(){
+  const q=document.getElementById('qSearch').value.toLowerCase();
+  const sf=document.getElementById('qStatus').value;
+  const tf=document.getElementById('qType').value;
+  const so=document.getElementById('qSort').value;
+  let list=jobs.filter(j=>{
+    const mq=!q||(j.co+j.role+(j.notes||'')+(j.recruiter||'')).toLowerCase().includes(q);
+    const ms=sf==='all'||j.status===sf;
+    const mt=tf==='all'||j.type===tf;
+    const mf=curFilter==='all'||j.status===curFilter;
+    return mq&&ms&&mt&&mf;
+  });
+  if(so==='match')list.sort((a,b)=>(b.match||0)-(a.match||0));
+  else if(so==='date')list.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  else list.sort((a,b)=>a.co.localeCompare(b.co));
+  return list;
+}
+
+function render(){
+  updateStats();
+  renderOpenings();
+  const list=getFiltered();
+  const el=document.getElementById('jobsList');
+  const noR=document.getElementById('noResults');
+  document.getElementById('listLabel').textContent=curFilter==='all'?'All applications':curFilter;
+  if(!list.length){el.innerHTML='';noR.style.display='block';return;}
+  noR.style.display='none';
+  el.innerHTML=list.map((j,i)=>{
+    const ac=ACOL[i%5];
+    const ss=statusStyle(j.status);
+    const mc=matchColor(j.match||0);
+    return `
+    <div class="job-card">
+      <div class="jc-main">
+        <div class="jc-avatar" style="background:${ac.bg};color:${ac.fg}">${initials(j.co)}</div>
+        <div class="jc-info">
+          <div class="jc-top">
+            <div>
+              <div class="jc-co">${j.co}</div>
+              <div class="jc-role">${j.role}</div>
+            </div>
+            <div class="jc-right">
+              <span class="status-badge" style="background:${ss.bg};border:1px solid ${ss.border};color:${ss.color}">${j.status}</span>
+              <span class="type-tag">${j.type}</span>
+            </div>
+          </div>
+          <div class="jc-meta">
+            ${j.match?`<div class="match-bar-wrap"><div class="match-mini"><div class="match-fill" style="width:${j.match}%;background:${mc}"></div></div><span class="match-val" style="color:${mc}">${j.match}%</span></div>`:''}
+            ${j.salary?`<div class="meta">💰 ${fmtSal(j.salary)}</div>`:''}
+            ${j.date?`<div class="meta">📅 ${j.date}</div>`:''}
+            ${j.followup?`<div class="meta" style="color:var(--yellow)">🔔 ${j.followup}</div>`:''}
+            ${j.notes?`<div class="meta" style="max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">📝 ${j.notes}</div>`:''}
+          </div>
+        </div>
+      </div>
+      <div class="jc-actions">
+        ${j.link?`<button class="jc-act apply-act" onclick="window.open('${j.link}','_blank')">🔗 Apply link</button>`:''}
+        ${j.recruiter?`<button class="jc-act mail-act" onclick="mailTo('${j.recruiter}','${j.co}','${j.role}')">✉ Mail recruiter</button>`:''}
+        <button class="jc-act" onclick="openEdit(${j.id})">✏ Update</button>
+        <button class="jc-act del-act" onclick="delJob(${j.id})">🗑 Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function sideFilter(s){
+  curFilter=s;
+  document.querySelectorAll('.sb-item').forEach(el=>el.classList.remove('active'));
+  const sid={'all':'sb-all','Want to Apply':'sb-want','Applied':'sb-applied','Interview':'sb-interview','Offer':'sb-offer','Rejected':'sb-rejected'};
+  if(sid[s])document.getElementById(sid[s]).classList.add('active');
+  document.querySelectorAll('.stat-card').forEach(el=>el.classList.remove('active'));
+  const scid={'all':'sc-all','Applied':'sc-applied','Want to Apply':'sc-want','Interview':'sc-interview','Offer':'sc-offer','Rejected':'sc-rejected'};
+  if(scid[s])document.getElementById(scid[s]).classList.add('active');
+  document.getElementById('qStatus').value=s==='all'?'all':s;
+  render();
+}
+
+function mailMe(){window.location.href='mailto:naveenmknmurugan@gmail.com'}
+function mailTo(email,co,role){
+  const sub=`Follow-up: ${role} at ${co}`;
+  const body=`Dear Hiring Team,\n\nI am writing to follow up on my application for the ${role} position at ${co}.\n\nI remain very interested in this opportunity and would love the chance to discuss further.\n\nBest regards,\nNaveen M\nnaveenmknmurugan@gmail.com\n+91 93604 23961`;
+  window.location.href=`mailto:${email}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`;
+}
+
+function openModal(){
+  editId=null;
+  document.getElementById('modalTitle').textContent='Add application';
+  document.getElementById('fId').value='';
+  ['fCo','fRole','fLink','fDate','fFollowup','fRecruiter','fNotes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fSalary').value='';
+  document.getElementById('fMatch').value='';
+  document.getElementById('fType').value='Full-time';
+  document.getElementById('fStatus').value='Want to Apply';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function openEdit(id){
+  const j=jobs.find(x=>x.id===id);if(!j)return;
+  editId=id;
+  document.getElementById('modalTitle').textContent='Update application';
+  document.getElementById('fId').value=id;
+  document.getElementById('fCo').value=j.co||'';
+  document.getElementById('fRole').value=j.role||'';
+  document.getElementById('fType').value=j.type||'Full-time';
+  document.getElementById('fStatus').value=j.status||'Want to Apply';
+  document.getElementById('fLink').value=j.link||'';
+  document.getElementById('fSalary').value=j.salary||'';
+  document.getElementById('fDate').value=j.date||'';
+  document.getElementById('fFollowup').value=j.followup||'';
+  document.getElementById('fRecruiter').value=j.recruiter||'';
+  document.getElementById('fMatch').value=j.match||'';
+  document.getElementById('fNotes').value=j.notes||'';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open')}
+function closeModalOutside(e){if(e.target.id==='modalOverlay')closeModal()}
+
+function saveEntry(){
+  const co=document.getElementById('fCo').value.trim();
+  const role=document.getElementById('fRole').value.trim();
+  if(!co||!role){showToast('Company and Role are required!');return;}
+  const obj={co,role,
+    type:document.getElementById('fType').value,
+    status:document.getElementById('fStatus').value,
+    link:document.getElementById('fLink').value.trim(),
+    salary:parseInt(document.getElementById('fSalary').value)||0,
+    date:document.getElementById('fDate').value,
+    followup:document.getElementById('fFollowup').value,
+    recruiter:document.getElementById('fRecruiter').value.trim(),
+    match:parseInt(document.getElementById('fMatch').value)||0,
+    notes:document.getElementById('fNotes').value.trim(),
+  };
+  if(editId){const i=jobs.findIndex(j=>j.id===editId);if(i>-1)jobs[i]={...jobs[i],...obj};showToast('Updated!');}
+  else{obj.id=nid++;jobs.push(obj);showToast('Application added!');}
+  closeModal();render();
+}
+
+function delJob(id){
+  if(!confirm('Delete this application?'))return;
+  jobs=jobs.filter(j=>j.id!==id);render();showToast('Deleted.');
+}
+
+function exportCSV(){
+  const h=['Company','Role','Type','Status','Apply Link','Salary SGD','Match %','Date Applied','Follow-up','Recruiter','Notes'];
+  const rows=jobs.map(j=>[j.co,j.role,j.type,j.status,j.link,j.salary,j.match,j.date,j.followup,j.recruiter,j.notes].map(v=>'"'+(v||'')+'"').join(','));
+  const csv=[h.join(','),...rows].join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='Naveen_JobTracker.csv';a.click();
+  showToast('CSV exported!');
+}
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600)}
+
+render();
+</script>
+</body>
+</html>
