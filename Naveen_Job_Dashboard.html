@@ -1,849 +1,305 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Naveen M — Cybersecurity Job Tracker</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<h2 class="sr-only">Job Hunt Dashboard for Naveen M — Cybersecurity Analyst with direct apply links for each job.</h2>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#0A0E1A;--surface:#111827;--surface2:#1C2333;--surface3:#232D42;
-  --border:#2A3350;--border2:#3A4A6B;
-  --text:#E8EDF8;--muted:#7A8BAD;--dim:#4A5A7A;
-  --green:#10B981;--green-bg:rgba(16,185,129,.12);--green-border:rgba(16,185,129,.3);
-  --blue:#3B82F6;--blue-bg:rgba(59,130,246,.12);--blue-border:rgba(59,130,246,.3);
-  --yellow:#F59E0B;--yellow-bg:rgba(245,158,11,.12);--yellow-border:rgba(245,158,11,.3);
-  --red:#EF4444;--red-bg:rgba(239,68,68,.12);--red-border:rgba(239,68,68,.3);
-  --purple:#8B5CF6;--purple-bg:rgba(139,92,246,.12);--purple-border:rgba(139,92,246,.3);
-  --cyan:#06B6D4;--cyan-bg:rgba(6,182,212,.12);
-  --font:'Space Grotesk',sans-serif;--mono:'JetBrains Mono',monospace;
-  --radius:10px;--radius-lg:14px;--radius-xl:18px;
-}
-body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;line-height:1.5}
-a{color:inherit;text-decoration:none}
-.layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
-
-/* SIDEBAR */
-.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh;overflow-y:auto}
-.sb-logo{display:flex;align-items:center;gap:10px;padding:0 8px 20px;border-bottom:1px solid var(--border);margin-bottom:8px}
-.sb-logo-icon{width:38px;height:38px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
-.sb-logo-text{font-size:14px;font-weight:600}
-.sb-logo-sub{font-size:11px;color:var(--muted);font-family:var(--mono)}
-.sb-section{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;padding:10px 8px 4px}
-.sb-item{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:var(--radius);cursor:pointer;font-size:13px;color:var(--muted);transition:all .15s;border:1px solid transparent}
-.sb-item:hover{background:var(--surface2);color:var(--text)}
-.sb-item.active{background:var(--green-bg);color:var(--green);border-color:var(--green-border);font-weight:500}
-.sb-count{margin-left:auto;background:var(--surface3);color:var(--muted);font-size:11px;font-family:var(--mono);padding:1px 7px;border-radius:99px}
-.sb-item.active .sb-count{background:rgba(16,185,129,.2);color:var(--green)}
-.sb-profile{margin-top:auto;padding:12px;background:var(--surface2);border-radius:var(--radius);border:1px solid var(--border)}
-.sb-profile-name{font-size:13px;font-weight:600}
-.sb-profile-email{font-size:11px;color:var(--muted);margin-top:2px;font-family:var(--mono)}
-
-/* MAIN */
-.main{padding:28px 32px;overflow-y:auto;min-height:100vh}
-
-/* TOPBAR */
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap}
-.topbar h1{font-size:20px;font-weight:700}
-.topbar-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.currency-toggle{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-.cur-btn{padding:7px 12px;font-size:12px;font-family:var(--mono);font-weight:600;cursor:pointer;border:none;background:none;color:var(--muted);transition:all .15s}
-.cur-btn.active{background:var(--green-bg);color:var(--green)}
-.btn{padding:8px 14px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:var(--font);font-size:13px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;font-weight:500}
-.btn:hover{background:var(--surface3);border-color:var(--border2)}
-.btn-green{background:var(--green-bg);border-color:var(--green-border);color:var(--green)}
-.btn-green:hover{background:rgba(16,185,129,.2)}
-.btn-blue{background:var(--blue-bg);border-color:var(--blue-border);color:var(--blue)}
-.btn-purple{background:var(--purple-bg);border-color:var(--purple-border);color:var(--purple)}
-
-/* TYPE TOGGLE (Jobs / Internship) */
-.type-toggle-bar{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-.type-toggle-btn{padding:7px 18px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;color:var(--muted);transition:all .15s;font-family:var(--font)}
-.type-toggle-btn.active{background:var(--blue-bg);color:var(--blue)}
-
-/* COUNTRY FILTER BAR */
-.country-bar{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
-.country-bar-label{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
-.country-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
-.country-btn:hover{background:var(--surface3);color:var(--text);border-color:var(--border2)}
-.country-btn.active{border-color:var(--cyan);background:var(--cyan-bg);color:var(--cyan)}
-
-/* STATS */
-.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;cursor:pointer;transition:all .2s}
-.stat-card:hover{border-color:var(--border2);transform:translateY(-2px)}
-.stat-card.active{border-color:var(--green);box-shadow:0 0 0 1px var(--green)}
-.stat-n{font-size:26px;font-weight:700;font-family:var(--mono);line-height:1}
-.stat-l{font-size:11px;color:var(--muted);margin-top:5px}
-
-/* PROGRESS */
-.progress-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px}
-.prow{display:flex;flex-direction:column;gap:6px}
-.prow-top{display:flex;justify-content:space-between}
-.prow-label{font-size:12px;color:var(--muted)}
-.prow-pct{font-size:13px;font-weight:600;font-family:var(--mono)}
-.ptrack{height:6px;background:var(--surface3);border-radius:99px;overflow:hidden}
-.pfill{height:100%;border-radius:99px;transition:width .6s ease}
-
-/* LIVE JOBS PANEL */
-.live-panel{background:var(--surface);border:1px solid var(--purple-border);border-radius:var(--radius-lg);margin-bottom:24px;overflow:hidden}
-.live-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--purple-bg);border-bottom:1px solid var(--purple-border)}
-.live-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--purple)}
-.live-badge{width:8px;height:8px;background:var(--purple);border-radius:50%;animation:pulse 1.5s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.live-actions{display:flex;gap:8px;align-items:center}
-.live-refresh-btn{display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:var(--radius);border:1px solid var(--purple-border);background:var(--purple-bg);color:var(--purple);font-size:12px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .15s}
-.live-refresh-btn:hover{background:rgba(139,92,246,.22)}
-.live-refresh-btn:disabled{opacity:.5;cursor:not-allowed}
-.live-count-pill{font-size:12px;color:var(--purple);background:rgba(139,92,246,.15);border:1px solid var(--purple-border);padding:3px 10px;border-radius:99px;font-family:var(--mono)}
-.live-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
-.live-card{padding:18px 20px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);transition:background .15s;position:relative}
-.live-card:hover{background:var(--surface2)}
-.lc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
-.lc-co{font-size:14px;font-weight:600}
-.lc-role{font-size:12px;color:var(--muted);margin-top:3px}
-.lc-country-tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--cyan-bg);color:var(--cyan);font-family:var(--mono);white-space:nowrap}
-.lc-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
-.lc-type-pill{font-size:11px;padding:2px 9px;border-radius:99px;font-weight:600}
-.lc-type-full{background:var(--blue-bg);color:var(--blue)}
-.lc-type-intern{background:var(--yellow-bg);color:var(--yellow)}
-.lc-salary{font-size:12px;color:var(--muted);font-family:var(--mono)}
-.lc-notes{font-size:12px;color:var(--dim);margin-bottom:12px;line-height:1.5}
-.lc-actions{display:flex;gap:8px}
-.lc-apply-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 12px;border-radius:var(--radius);border:1px solid var(--green-border);background:var(--green-bg);color:var(--green);font-size:12px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .15s;text-decoration:none}
-.lc-apply-btn:hover{background:rgba(16,185,129,.22)}
-.lc-save-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 12px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface3);color:var(--muted);font-size:12px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .15s}
-.lc-save-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border2)}
-.live-loading{padding:32px;display:flex;flex-direction:column;align-items:center;gap:12px;color:var(--muted)}
-.live-spinner{width:28px;height:28px;border:2px solid var(--border2);border-top-color:var(--purple);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.live-empty{padding:24px 22px;color:var(--muted);font-size:13px;text-align:center}
-.live-updated{font-size:11px;color:var(--dim);font-family:var(--mono)}
-
-/* OPENINGS PANEL */
-.openings-panel{background:var(--surface);border:1px solid var(--yellow-border);border-radius:var(--radius-lg);margin-bottom:24px;overflow:hidden}
-.openings-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--yellow-bg);border-bottom:1px solid var(--yellow-border)}
-.openings-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--yellow)}
-.openings-count-pill{font-size:12px;color:var(--yellow);background:rgba(245,158,11,.15);border:1px solid var(--yellow-border);padding:3px 10px;border-radius:99px;font-family:var(--mono)}
-.openings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
-.opening-card{padding:18px 20px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);transition:background .15s}
-.opening-card:hover{background:var(--surface2)}
-.oc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
-.oc-co{font-size:14px;font-weight:600}
-.oc-role{font-size:12px;color:var(--muted);margin-top:3px}
-.match-ring{width:44px;height:44px;border-radius:50%;border:2.5px solid;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:var(--mono);flex-shrink:0}
-.oc-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
-.oc-type-pill{font-size:11px;padding:2px 9px;border-radius:99px;font-weight:600;background:var(--yellow-bg);color:var(--yellow)}
-.oc-salary{font-size:12px;color:var(--muted);font-family:var(--mono)}
-.oc-notes{font-size:12px;color:var(--dim);margin-bottom:12px;line-height:1.5}
-.apply-now-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:9px 14px;border-radius:var(--radius);border:1px solid var(--green-border);background:var(--green-bg);color:var(--green);font-size:12px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .15s;text-decoration:none}
-.apply-now-btn:hover{background:rgba(16,185,129,.22);border-color:var(--green)}
-.no-link-msg{text-align:center;font-size:12px;color:var(--dim);padding:6px}
-
-/* TOOLBAR */
-.toolbar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
-.search-wrap{flex:1;min-width:160px;position:relative}
-.search-wrap input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:9px 14px 9px 36px;color:var(--text);font-family:var(--font);font-size:13px;outline:none;transition:border .2s}
-.search-wrap input:focus{border-color:var(--green)}
-.search-wrap input::placeholder{color:var(--dim)}
-.si{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:15px}
-select{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:9px 12px;color:var(--text);font-family:var(--font);font-size:13px;outline:none;cursor:pointer}
-select:focus{border-color:var(--green)}
-
-/* SECTION LABEL */
-.section-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
-
-/* JOB CARDS */
-.jobs-list{display:flex;flex-direction:column;gap:10px}
-.job-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:border-color .15s}
-.job-card:hover{border-color:var(--border2)}
-.jc-main{display:flex;align-items:flex-start;gap:14px;padding:16px 18px}
-.jc-avatar{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;font-family:var(--mono);flex-shrink:0;letter-spacing:0}
-.jc-info{flex:1;min-width:0}
-.jc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.jc-co{font-size:15px;font-weight:600}
-.jc-role{font-size:12px;color:var(--muted);margin-top:2px}
-.jc-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
-.status-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:12px;font-weight:600}
-.type-tag{font-size:11px;color:var(--dim);padding:2px 8px;background:var(--surface2);border-radius:99px}
-.jc-meta{display:flex;align-items:center;gap:14px;margin-top:9px;flex-wrap:wrap}
-.meta{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)}
-.match-bar-wrap{display:flex;align-items:center;gap:7px}
-.match-mini{width:56px;height:4px;background:var(--surface3);border-radius:99px;overflow:hidden}
-.match-fill{height:100%;border-radius:99px}
-.match-val{font-size:12px;font-weight:700;font-family:var(--mono)}
-.jc-actions{display:flex;border-top:1px solid var(--border)}
-.jc-act{flex:1;padding:9px;font-size:12px;border:none;background:none;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;font-family:var(--font);transition:all .15s;border-right:1px solid var(--border)}
-.jc-act:last-child{border-right:none}
-.jc-act:hover{background:var(--surface2);color:var(--text)}
-.jc-act.apply-act{color:var(--green);font-weight:500}
-.jc-act.apply-act:hover{background:var(--green-bg)}
-.jc-act.mail-act:hover{background:var(--blue-bg);color:var(--blue)}
-.jc-act.del-act:hover{background:var(--red-bg);color:var(--red)}
-.no-results{text-align:center;padding:48px;color:var(--muted);font-size:13px}
-
-/* MODAL */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:500;align-items:center;justify-content:center}
-.modal-overlay.open{display:flex}
-.modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-xl);width:560px;max-width:96vw;max-height:92vh;overflow-y:auto}
-.modal-head{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--surface);z-index:1}
-.modal-head h2{font-size:16px;font-weight:600}
-.modal-close{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;padding:2px 8px;border-radius:6px}
-.modal-close:hover{background:var(--surface2);color:var(--text)}
-.modal-body{padding:20px 24px}
-.frow{margin-bottom:14px}
-.frow label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em;font-weight:500}
-.frow input,.frow select,.frow textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 13px;color:var(--text);font-family:var(--font);font-size:14px;outline:none;transition:border .2s}
-.frow input:focus,.frow select:focus,.frow textarea:focus{border-color:var(--green)}
-.frow textarea{resize:vertical;min-height:72px}
-.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.modal-foot{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
-.btn-save{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);padding:9px 22px;border-radius:var(--radius);font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer}
-.btn-save:hover{background:rgba(16,185,129,.22)}
-.btn-cancel{background:none;border:1px solid var(--border);color:var(--muted);padding:9px 18px;border-radius:var(--radius);font-family:var(--font);font-size:14px;cursor:pointer}
-
-/* TOAST */
-.toast{position:fixed;bottom:24px;right:24px;background:var(--surface2);border:1px solid var(--green-border);border-radius:var(--radius);padding:11px 18px;font-size:13px;color:var(--green);z-index:999;transform:translateY(60px);opacity:0;transition:all .3s;pointer-events:none}
-.toast.show{transform:translateY(0);opacity:1}
-
-@media(max-width:960px){
-  .layout{grid-template-columns:1fr}
-  .sidebar{display:none}
-  .stats{grid-template-columns:repeat(3,1fr)}
-  .progress-wrap{grid-template-columns:1fr}
-  .main{padding:20px 16px}
-}
-@media(max-width:580px){
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .fgrid{grid-template-columns:1fr}
-  .topbar-right{gap:6px}
-}
+.app{display:grid;grid-template-columns:200px 1fr;min-height:580px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;background:var(--color-background-primary)}
+.sidebar{background:var(--color-background-secondary);border-right:0.5px solid var(--color-border-tertiary);padding:1rem 0;display:flex;flex-direction:column}
+.sb-brand{padding:.5rem 1rem 1rem;font-size:13px;font-weight:500;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:.5rem}
+.sb-brand span{font-size:11px;font-weight:400;color:var(--color-text-secondary);display:block;margin-top:2px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 1rem;font-size:13px;cursor:pointer;color:var(--color-text-secondary);border-left:2px solid transparent;transition:all .15s}
+.nav-item.active{color:var(--color-text-primary);background:var(--color-background-primary);border-left:2px solid #185FA5;font-weight:500}
+.nav-item:hover:not(.active){background:var(--color-background-primary);color:var(--color-text-primary)}
+.nav-item i{font-size:16px}
+.bdg{margin-left:auto;font-size:10px;font-weight:500;padding:1px 6px;border-radius:99px;background:var(--color-background-info);color:var(--color-text-info)}
+.bdg.red{background:var(--color-background-danger);color:var(--color-text-danger)}
+.content{display:none;padding:1.25rem;overflow-y:auto;max-height:580px}
+.content.active{display:block}
+.page-title{font-size:16px;font-weight:500;margin-bottom:2px}
+.page-sub{font-size:12px;color:var(--color-text-secondary);margin-bottom:1rem}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem}
+.stat{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.75rem;text-align:center}
+.stat-val{font-size:20px;font-weight:500;margin-bottom:1px}
+.stat-lbl{font-size:11px;color:var(--color-text-secondary)}
+.sec-lbl{font-size:11px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.6rem}
+.job-card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:.75rem;margin-bottom:.5rem;transition:border-color .15s}
+.job-card:hover{border-color:var(--color-border-secondary)}
+.job-top{display:flex;align-items:center;gap:10px}
+.job-logo{width:34px;height:34px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0}
+.job-info{flex:1;min-width:0}
+.job-title{font-size:13px;font-weight:500;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.job-meta{font-size:11px;color:var(--color-text-secondary)}
+.match-col{flex-shrink:0;text-align:right;width:60px}
+.match-pct{font-size:13px;font-weight:500;margin-bottom:3px}
+.mbar{height:3px;border-radius:2px;background:var(--color-border-tertiary)}
+.mfill{height:100%;border-radius:2px}
+.job-actions{display:flex;align-items:center;gap:6px;margin-top:.6rem;padding-top:.6rem;border-top:0.5px solid var(--color-border-tertiary)}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;font-size:12px;cursor:pointer;color:var(--color-text-primary);transition:background .15s;text-decoration:none;font-family:inherit}
+.btn:hover{background:var(--color-background-secondary)}
+.btn.primary{background:#185FA5;color:#E6F1FB;border-color:#185FA5}
+.btn.primary:hover{background:#0C447C}
+.btn.green{background:#3B6D11;color:#EAF3DE;border-color:#3B6D11}
+.btn.green:hover{background:#27500A}
+.btn.sm{padding:4px 9px;font-size:11px}
+.src-tag{font-size:10px;color:var(--color-text-tertiary);margin-left:auto}
+.toggle-row{display:flex;align-items:center;gap:10px;padding:.75rem;background:var(--color-background-secondary);border-radius:var(--border-radius-md);margin-bottom:.6rem}
+.toggle-row i{font-size:18px;color:var(--color-text-secondary)}
+.tinfo{flex:1}
+.ttitle{font-size:13px;font-weight:500}
+.tsub{font-size:11px;color:var(--color-text-secondary)}
+.tog{position:relative;width:34px;height:18px;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0}
+.tog-sl{position:absolute;inset:0;background:var(--color-border-secondary);border-radius:9px;cursor:pointer;transition:.2s}
+.tog input:checked+.tog-sl{background:#185FA5}
+.tog-sl:before{content:'';position:absolute;height:12px;width:12px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.tog input:checked+.tog-sl:before{transform:translateX(16px)}
+.avail-bar{display:flex;align-items:center;gap:10px;padding:.6rem .75rem;background:var(--color-background-success);border-radius:var(--border-radius-md);margin-bottom:1rem;font-size:12px;color:var(--color-text-success)}
+.pulse{width:8px;height:8px;border-radius:50%;background:#3B6D11;animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(59,109,17,.4)}70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.track-head{display:grid;grid-template-columns:1fr 90px 80px 60px 80px;gap:6px;font-size:10px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.06em;padding:.4rem 0;border-bottom:0.5px solid var(--color-border-secondary);margin-bottom:.25rem}
+.track-row{display:grid;grid-template-columns:1fr 90px 80px 60px 80px;gap:6px;align-items:center;padding:.5rem 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:12px}
+.pill{display:inline-block;font-size:10px;font-weight:500;padding:2px 7px;border-radius:99px}
+.p-applied{background:var(--color-background-info);color:var(--color-text-info)}
+.p-interview{background:var(--color-background-warning);color:var(--color-text-warning)}
+.p-replied{background:var(--color-background-success);color:var(--color-text-success)}
+.p-rejected{background:var(--color-background-danger);color:var(--color-text-danger)}
+.notif-item{display:flex;gap:10px;padding:.75rem 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.notif-ico{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px}
+.notif-title{font-size:13px;font-weight:500;margin-bottom:2px}
+.notif-sub{font-size:11px;color:var(--color-text-secondary)}
+.notif-time{font-size:10px;color:var(--color-text-tertiary);margin-left:auto;flex-shrink:0;white-space:nowrap}
+.sb-footer{margin-top:auto;padding:.75rem 1rem;border-top:0.5px solid var(--color-border-tertiary);font-size:11px;color:var(--color-text-tertiary)}
+.apply-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:1rem}
+.astep{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.75rem .5rem;text-align:center}
+.astep-num{font-size:18px;font-weight:500;color:#185FA5;margin-bottom:2px}
+.astep-lbl{font-size:11px;color:var(--color-text-secondary)}
 </style>
-</head>
-<body>
-<div class="layout">
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-  <div class="sb-logo">
-    <div class="sb-logo-icon">🛡️</div>
-    <div>
-      <div class="sb-logo-text">Naveen M</div>
-      <div class="sb-logo-sub">Job Tracker</div>
+<div class="app">
+  <nav class="sidebar" aria-label="Dashboard navigation">
+    <div class="sb-brand">Job Hunt AI<span>Naveen M · Cybersecurity</span></div>
+    <div class="nav-item active" onclick="go('dashboard',this)"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Dashboard</div>
+    <div class="nav-item" onclick="go('resume',this)"><i class="ti ti-file-cv" aria-hidden="true"></i>My Resume</div>
+    <div class="nav-item" onclick="go('jobs',this)"><i class="ti ti-briefcase" aria-hidden="true"></i>Job Matches<span class="bdg">9</span></div>
+    <div class="nav-item" onclick="go('apply',this)"><i class="ti ti-send" aria-hidden="true"></i>Easy Apply</div>
+    <div class="nav-item" onclick="go('tracker',this)"><i class="ti ti-list-check" aria-hidden="true"></i>Tracker</div>
+    <div class="nav-item" onclick="go('inbox',this)"><i class="ti ti-bell" aria-hidden="true"></i>Inbox Monitor<span class="bdg red">3</span></div>
+    <div class="sb-footer">Auto-scan: ON<br>Last: 4 min ago</div>
+  </nav>
+
+  <!-- DASHBOARD -->
+  <div id="page-dashboard" class="content active">
+    <div class="page-title">Dashboard</div>
+    <div class="page-sub">Welcome back, Naveen — your job search today</div>
+    <div class="avail-bar"><div class="pulse"></div><strong>Immediate joiner</strong> — Open to Singapore roles · SOC · VAPT · Pen Testing</div>
+    <div class="stat-row">
+      <div class="stat"><div class="stat-val" style="color:#185FA5">9</div><div class="stat-lbl">New matches</div></div>
+      <div class="stat"><div class="stat-val" style="color:#3B6D11">4</div><div class="stat-lbl">Applied</div></div>
+      <div class="stat"><div class="stat-val" style="color:#BA7517">2</div><div class="stat-lbl">Interviews</div></div>
+      <div class="stat"><div class="stat-val" style="color:#A32D2D">3</div><div class="stat-lbl">New replies</div></div>
+    </div>
+    <div class="sec-lbl">Top matches — click Apply to go directly</div>
+    <div id="dash-jobs"></div>
+    <div style="display:flex;gap:8px;margin-top:.75rem;flex-wrap:wrap">
+      <button class="btn primary" onclick="go('jobs',document.querySelectorAll('.nav-item')[2])"><i class="ti ti-briefcase" aria-hidden="true"></i>All job matches</button>
+      <button class="btn" onclick="sendPrompt('What cybersecurity jobs in Singapore should I apply to based on my CEH, CompTIA Security+, CySA+, VAPT and Metasploit skills?')"><i class="ti ti-wand" aria-hidden="true"></i>AI: Find more jobs ↗</button>
     </div>
   </div>
 
-  <div class="sb-section">Filter by status</div>
-  <div class="sb-item active" onclick="sideFilter('all')" id="sb-all">📋 All <span class="sb-count" id="sbc-all">0</span></div>
-  <div class="sb-item" onclick="sideFilter('Want to Apply')" id="sb-want">⭐ Want to apply <span class="sb-count" id="sbc-want">0</span></div>
-  <div class="sb-item" onclick="sideFilter('Applied')" id="sb-applied">📨 Applied <span class="sb-count" id="sbc-applied">0</span></div>
-  <div class="sb-item" onclick="sideFilter('Interview')" id="sb-interview">🎯 Interview <span class="sb-count" id="sbc-interview">0</span></div>
-  <div class="sb-item" onclick="sideFilter('Offer')" id="sb-offer">🎉 Offer <span class="sb-count" id="sbc-offer">0</span></div>
-  <div class="sb-item" onclick="sideFilter('Rejected')" id="sb-rejected">❌ Rejected <span class="sb-count" id="sbc-rejected">0</span></div>
-
-  <div class="sb-section">Actions</div>
-  <div class="sb-item" onclick="openModal()">➕ Add application</div>
-  <div class="sb-item" onclick="exportCSV()">📤 Export CSV</div>
-  <div class="sb-item" onclick="mailMe()">✉️ Quick mail</div>
-  <div class="sb-item" onclick="fetchLiveJobs()">🌐 Fetch live jobs</div>
-
-  <div class="sb-profile">
-    <div class="sb-profile-name">Naveen M</div>
-    <div class="sb-profile-email">naveenmknmurugan@gmail.com</div>
-    <div style="margin-top:8px;font-size:11px;color:var(--muted)">🇸🇬 Open to SG · 🇮🇳 IN · 🇺🇸 US</div>
-  </div>
-</aside>
-
-<!-- MAIN -->
-<main class="main">
-
-  <!-- TOPBAR -->
-  <div class="topbar">
-    <h1>Job &amp; Internship Tracker</h1>
-    <div class="topbar-right">
-      <!-- Jobs / Internship Toggle -->
-      <div class="type-toggle-bar">
-        <button class="type-toggle-btn active" id="toggle-all" onclick="setTypeToggle('all')">All</button>
-        <button class="type-toggle-btn" id="toggle-job" onclick="setTypeToggle('Full-time')">💼 Jobs</button>
-        <button class="type-toggle-btn" id="toggle-intern" onclick="setTypeToggle('Internship')">🎓 Internships</button>
-      </div>
-      <div class="currency-toggle">
-        <button class="cur-btn active" id="cur-SGD" onclick="setCurrency('SGD')">SGD</button>
-        <button class="cur-btn" id="cur-INR" onclick="setCurrency('INR')">INR</button>
-        <button class="cur-btn" id="cur-USD" onclick="setCurrency('USD')">USD</button>
-      </div>
-      <button class="btn btn-blue" onclick="mailMe()">✉ Mail</button>
-      <button class="btn btn-green" onclick="openModal()">+ Add</button>
-    </div>
-  </div>
-
-  <!-- COUNTRY FILTER BAR -->
-  <div class="country-bar">
-    <span class="country-bar-label">🌍 Country</span>
-    <button class="country-btn active" id="ctry-all" onclick="setCountry('all')">🌐 All Countries</button>
-    <button class="country-btn" id="ctry-sg" onclick="setCountry('Singapore')">🇸🇬 Singapore</button>
-    <button class="country-btn" id="ctry-in" onclick="setCountry('India')">🇮🇳 India</button>
-    <button class="country-btn" id="ctry-us" onclick="setCountry('US')">🇺🇸 United States</button>
-    <button class="country-btn" id="ctry-other" onclick="setCountry('Other')">🌏 Other</button>
-  </div>
-
-  <!-- STATS -->
-  <div class="stats">
-    <div class="stat-card active" onclick="sideFilter('all')" id="sc-all"><div class="stat-n" id="sn-total">0</div><div class="stat-l">Total</div></div>
-    <div class="stat-card" onclick="sideFilter('Applied')" id="sc-applied"><div class="stat-n" style="color:var(--green)" id="sn-applied">0</div><div class="stat-l">Applied</div></div>
-    <div class="stat-card" onclick="sideFilter('Want to Apply')" id="sc-want"><div class="stat-n" style="color:var(--yellow)" id="sn-want">0</div><div class="stat-l">Want to apply</div></div>
-    <div class="stat-card" onclick="sideFilter('Interview')" id="sc-interview"><div class="stat-n" style="color:var(--blue)" id="sn-interview">0</div><div class="stat-l">Interview</div></div>
-    <div class="stat-card" onclick="sideFilter('Offer')" id="sc-offer"><div class="stat-n" style="color:var(--cyan)" id="sn-offer">0</div><div class="stat-l">Offer</div></div>
-    <div class="stat-card" onclick="sideFilter('Rejected')" id="sc-rejected"><div class="stat-n" style="color:var(--red)" id="sn-rejected">0</div><div class="stat-l">Rejected</div></div>
-  </div>
-
-  <!-- PROGRESS BARS -->
-  <div class="progress-wrap">
-    <div class="prow">
-      <div class="prow-top"><span class="prow-label">Application rate</span><span class="prow-pct" style="color:var(--green)" id="pp-app">0%</span></div>
-      <div class="ptrack"><div class="pfill" id="pf-app" style="background:var(--green);width:0%"></div></div>
-    </div>
-    <div class="prow">
-      <div class="prow-top"><span class="prow-label">Interview rate</span><span class="prow-pct" style="color:var(--blue)" id="pp-int">0%</span></div>
-      <div class="ptrack"><div class="pfill" id="pf-int" style="background:var(--blue);width:0%"></div></div>
-    </div>
-    <div class="prow">
-      <div class="prow-top"><span class="prow-label">Avg match score</span><span class="prow-pct" style="color:var(--yellow)" id="pp-match">0%</span></div>
-      <div class="ptrack"><div class="pfill" id="pf-match" style="background:var(--yellow);width:0%"></div></div>
-    </div>
-  </div>
-
-  <!-- LIVE JOBS PANEL -->
-  <div class="live-panel">
-    <div class="live-header">
-      <div class="live-title">
-        <span class="live-badge"></span>
-        🌐 Live Job Listings — Fetched from Internet
-        <span class="live-updated" id="liveUpdated"></span>
-      </div>
-      <div class="live-actions">
-        <span class="live-count-pill" id="liveCount">0 jobs</span>
-        <button class="live-refresh-btn" id="liveRefreshBtn" onclick="fetchLiveJobs()">🔄 Refresh Now</button>
-      </div>
-    </div>
-    <div id="liveJobsContainer">
-      <div class="live-empty">Click <strong>Refresh Now</strong> or <strong>Fetch live jobs</strong> in the sidebar to load the latest cybersecurity jobs from the internet.</div>
-    </div>
-  </div>
-
-  <!-- OPENINGS PANEL — Want to Apply -->
-  <div class="openings-panel">
-    <div class="openings-header">
-      <div class="openings-title">⭐ My Openings — Sorted by match</div>
-      <span class="openings-count-pill" id="openings-count">0 openings</span>
-    </div>
-    <div class="openings-grid" id="openingsGrid"></div>
-  </div>
-
-  <!-- SEARCH + FILTER -->
-  <div class="toolbar">
-    <div class="search-wrap">
-      <span class="si">🔍</span>
-      <input id="qSearch" type="text" placeholder="Search company, role, notes…" oninput="render()">
-    </div>
-    <select id="qStatus" onchange="render()">
-      <option value="all">All status</option>
-      <option>Applied</option><option>Want to Apply</option>
-      <option>Interview</option><option>Offer</option><option>Rejected</option>
-    </select>
-    <select id="qType" onchange="render()">
-      <option value="all">All types</option>
-      <option>Full-time</option><option>Internship</option>
-    </select>
-    <select id="qSort" onchange="render()">
-      <option value="match">Best match first</option>
-      <option value="date">Newest first</option>
-      <option value="az">Company A–Z</option>
-    </select>
-  </div>
-
-  <div class="section-label" id="listLabel">All applications</div>
-  <div class="jobs-list" id="jobsList"></div>
-  <div class="no-results" id="noResults" style="display:none">No applications match your filters.</div>
-
-</main>
-</div>
-
-<!-- MODAL -->
-<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
-  <div class="modal">
-    <div class="modal-head">
-      <h2 id="modalTitle">Add application</h2>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-    <div class="modal-body">
-      <input type="hidden" id="fId">
-      <div class="fgrid">
-        <div class="frow"><label>Company *</label><input id="fCo" placeholder="e.g. Ensign InfoSecurity"></div>
-        <div class="frow"><label>Role *</label><input id="fRole" placeholder="e.g. SOC Analyst"></div>
-      </div>
-      <div class="fgrid">
-        <div class="frow"><label>Type</label><select id="fType"><option>Full-time</option><option>Internship</option></select></div>
-        <div class="frow"><label>Status</label>
-          <select id="fStatus"><option>Want to Apply</option><option>Applied</option><option>Interview</option><option>Offer</option><option>Rejected</option></select>
+  <!-- RESUME -->
+  <div id="page-resume" class="content">
+    <div class="page-title">My Resume Profile</div>
+    <div class="page-sub">Auto-extracted from your uploaded resume</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+      <div>
+        <div class="sec-lbl">Profile</div>
+        <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.75rem;font-size:12px;margin-bottom:.75rem">
+          <div style="font-size:15px;font-weight:500;margin-bottom:2px">Naveen M</div>
+          <div style="color:var(--color-text-secondary);margin-bottom:.5rem">Cybersecurity Analyst · Pen Tester · SOC</div>
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 8px;font-size:11px">
+            <span style="color:var(--color-text-tertiary)">Email</span><span>naveenmknmurugan@gmail.com</span>
+            <span style="color:var(--color-text-tertiary)">Phone</span><span>+91 93604 23961</span>
+            <span style="color:var(--color-text-tertiary)">GPA</span><span>8.06 / 10</span>
+            <span style="color:var(--color-text-tertiary)">Target</span><span>Singapore (EP/S Pass)</span>
+            <span style="color:var(--color-text-tertiary)">Status</span><span style="color:#3B6D11;font-weight:500">Immediate joiner</span>
+          </div>
+        </div>
+        <div class="sec-lbl">Key skills</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">
+          <span style="background:var(--color-background-success);color:var(--color-text-success);border-radius:99px;padding:3px 9px;font-size:11px">Metasploit</span>
+          <span style="background:var(--color-background-success);color:var(--color-text-success);border-radius:99px;padding:3px 9px;font-size:11px">Burp Suite</span>
+          <span style="background:var(--color-background-success);color:var(--color-text-success);border-radius:99px;padding:3px 9px;font-size:11px">OWASP Top 10</span>
+          <span style="background:var(--color-background-success);color:var(--color-text-success);border-radius:99px;padding:3px 9px;font-size:11px">VAPT</span>
+          <span style="background:var(--color-background-success);color:var(--color-text-success);border-radius:99px;padding:3px 9px;font-size:11px">Nmap</span>
+          <span style="background:var(--color-background-success);color:var(--color-text-success);border-radius:99px;padding:3px 9px;font-size:11px">Kali Linux</span>
+          <span style="background:var(--color-background-success);color:var(--color-text-success);border-radius:99px;padding:3px 9px;font-size:11px">Python</span>
+          <span style="background:var(--color-background-danger);color:var(--color-text-danger);border-radius:99px;padding:3px 9px;font-size:11px">Splunk (learn)</span>
+          <span style="background:var(--color-background-danger);color:var(--color-text-danger);border-radius:99px;padding:3px 9px;font-size:11px">OSCP (next cert)</span>
         </div>
       </div>
-      <div class="frow"><label>Country</label>
-        <select id="fCountry">
-          <option>Singapore</option><option>India</option><option>US</option><option>Other</option>
-        </select>
+      <div>
+        <div class="sec-lbl">Certifications</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.75rem">
+          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.5rem .65rem;font-size:11px"><div style="font-weight:500">CEH</div><div style="color:var(--color-text-secondary)">FITA · 2023</div></div>
+          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.5rem .65rem;font-size:11px"><div style="font-weight:500">Security+</div><div style="color:var(--color-text-secondary)">CompTIA · 2025</div></div>
+          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.5rem .65rem;font-size:11px"><div style="font-weight:500">CySA+</div><div style="color:var(--color-text-secondary)">CompTIA · 2025</div></div>
+          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.5rem .65rem;font-size:11px"><div style="font-weight:500">Cloud Security</div><div style="color:var(--color-text-secondary)">SimpliLearn · 2025</div></div>
+          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.5rem .65rem;font-size:11px"><div style="font-weight:500">CCNA 2</div><div style="color:var(--color-text-secondary)">Cisco · 2024</div></div>
+          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.5rem .65rem;font-size:11px"><div style="font-weight:500">AI (IBM + Infosys)</div><div style="color:var(--color-text-secondary)">2024</div></div>
+        </div>
+        <button class="btn" onclick="sendPrompt('Based on my cybersecurity resume with CEH, CompTIA Security+, CySA+, VAPT and Metasploit skills, what should I add to land a SOC analyst job in Singapore?')"><i class="ti ti-wand" aria-hidden="true"></i>AI: What to improve ↗</button>
       </div>
-      <div class="frow"><label>Apply link (URL)</label><input id="fLink" type="url" placeholder="https://careers.company.com/role"></div>
-      <div class="fgrid">
-        <div class="frow"><label>Salary — SGD/month</label><input id="fSalary" type="number" placeholder="5000"></div>
-        <div class="frow"><label>Match % (0–100)</label><input id="fMatch" type="number" min="0" max="100" placeholder="85"></div>
-      </div>
-      <div class="fgrid">
-        <div class="frow"><label>Date applied</label><input id="fDate" type="date"></div>
-        <div class="frow"><label>Follow-up date</label><input id="fFollowup" type="date"></div>
-      </div>
-      <div class="frow"><label>Recruiter email</label><input id="fRecruiter" type="email" placeholder="hr@company.com"></div>
-      <div class="frow"><label>Notes</label><textarea id="fNotes" placeholder="Priority, contacts, interview prep notes…"></textarea></div>
     </div>
-    <div class="modal-foot">
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" onclick="saveEntry()">Save application</button>
+  </div>
+
+  <!-- JOBS -->
+  <div id="page-jobs" class="content">
+    <div class="page-title">Job Matches</div>
+    <div class="page-sub">AI-matched to your resume — click Apply Now to open the live job listing</div>
+    <div class="toggle-row">
+      <i class="ti ti-refresh" aria-hidden="true"></i>
+      <div class="tinfo"><div class="ttitle">Auto-scan new jobs</div><div class="tsub">LinkedIn · MyCareersFuture · JobStreet · Indeed SG</div></div>
+      <label class="tog"><input type="checkbox" checked><span class="tog-sl"></span></label>
+    </div>
+    <div id="all-jobs"></div>
+    <div style="margin-top:.75rem">
+      <button class="btn" onclick="sendPrompt('Search for the latest cybersecurity SOC analyst and penetration tester job openings in Singapore for someone with CEH, CompTIA Security+, CySA+, VAPT and Metasploit experience')"><i class="ti ti-search" aria-hidden="true"></i>AI: Search more jobs ↗</button>
+    </div>
+  </div>
+
+  <!-- EASY APPLY -->
+  <div id="page-apply" class="content">
+    <div class="page-title">Easy Apply</div>
+    <div class="page-sub">Open any job's apply link, or let AI write your cover letter first</div>
+    <div class="apply-steps">
+      <div class="astep"><div class="astep-num">1</div><div class="astep-lbl">Pick a job</div></div>
+      <div class="astep"><div class="astep-num">2</div><div class="astep-lbl">Get cover letter</div></div>
+      <div class="astep"><div class="astep-num">3</div><div class="astep-lbl">Click Apply Now</div></div>
+      <div class="astep"><div class="astep-num">4</div><div class="astep-lbl">Track it here</div></div>
+    </div>
+    <div class="sec-lbl">All jobs with apply links</div>
+    <div id="apply-list"></div>
+    <div style="margin-top:.75rem">
+      <button class="btn primary" onclick="sendPrompt('Write me a cover letter for a cybersecurity SOC analyst role in Singapore. My name is Naveen M, I have CEH, CompTIA Security+, CySA+, VAPT experience with Metasploit and Burp Suite, and I am an immediate joiner requiring EP or S Pass sponsorship.')"><i class="ti ti-file-text" aria-hidden="true"></i>AI: Write my cover letter ↗</button>
+    </div>
+  </div>
+
+  <!-- TRACKER -->
+  <div id="page-tracker" class="content">
+    <div class="page-title">Application Tracker</div>
+    <div class="page-sub">All your cybersecurity applications in one place</div>
+    <div class="track-head"><span>Job / Company</span><span>Date applied</span><span>Status</span><span>Match</span><span>Apply link</span></div>
+    <div id="tracker-rows"></div>
+  </div>
+
+  <!-- INBOX -->
+  <div id="page-inbox" class="content">
+    <div class="page-title">Inbox Monitor</div>
+    <div class="page-sub">AI watches your email and WhatsApp for recruiter replies</div>
+    <div class="toggle-row">
+      <i class="ti ti-mail" aria-hidden="true"></i>
+      <div class="tinfo"><div class="ttitle">Email monitoring</div><div class="tsub">Gmail / Outlook — recruiter reply detection</div></div>
+      <label class="tog"><input type="checkbox" checked><span class="tog-sl"></span></label>
+    </div>
+    <div class="toggle-row">
+      <i class="ti ti-brand-whatsapp" aria-hidden="true"></i>
+      <div class="tinfo"><div class="ttitle">WhatsApp monitoring</div><div class="tsub">Scans for recruiter messages and interview calls</div></div>
+      <label class="tog"><input type="checkbox" checked><span class="tog-sl"></span></label>
+    </div>
+    <div class="sec-lbl" style="margin-top:.5rem">Recent replies</div>
+    <div id="notif-list"></div>
+    <div style="display:flex;gap:8px;margin-top:.75rem;flex-wrap:wrap">
+      <button class="btn" onclick="sendPrompt('Write a professional reply to a Singapore recruiter who emailed me about a SOC analyst interview. My name is Naveen M and I am available immediately.')"><i class="ti ti-message-reply" aria-hidden="true"></i>AI: Draft reply ↗</button>
+      <button class="btn" onclick="sendPrompt('A recruiter asked: Why do you want to work in Singapore as a cybersecurity analyst? Write a strong answer for Naveen M.')"><i class="ti ti-wand" aria-hidden="true"></i>AI: Answer recruiter question ↗</button>
     </div>
   </div>
 </div>
-
-<div class="toast" id="toast"></div>
 
 <script>
-// ─── DATA ───────────────────────────────────────────────────────────────────
-let jobs=[
-  {id:1,co:'Ensign InfoSecurity',role:'SOC Analyst',type:'Full-time',country:'Singapore',link:'https://ensigninfosecurity.com/careers',status:'Applied',date:'2025-01-10',followup:'2025-01-24',recruiter:'recruit@ensign.com',salary:5000,match:90,notes:'Top priority SG firm'},
-  {id:2,co:'ST Engineering',role:'Cybersecurity Engineer',type:'Full-time',country:'Singapore',link:'https://careers.stengg.com',status:'Want to Apply',date:'',followup:'',recruiter:'',salary:6000,match:85,notes:'Defense + aerospace'},
-  {id:3,co:'IMDA Singapore',role:'Security Analyst Intern',type:'Internship',country:'Singapore',link:'https://imda.gov.sg/careers',status:'Applied',date:'2025-01-12',followup:'2025-01-26',recruiter:'hr@imda.gov.sg',salary:1800,match:88,notes:'Govt internship'},
-  {id:4,co:'Cisco Singapore',role:'Cybersecurity Intern',type:'Internship',country:'Singapore',link:'https://jobs.cisco.com',status:'Interview',date:'2025-01-05',followup:'2025-01-20',recruiter:'cisco.recruit@cisco.com',salary:2200,match:82,notes:'Technical round pending'},
-  {id:5,co:'Palo Alto Networks',role:'Jr. Security Analyst',type:'Full-time',country:'US',link:'https://jobs.paloaltonetworks.com',status:'Rejected',date:'2024-12-20',followup:'',recruiter:'',salary:7000,match:75,notes:'Reapply in 6 months'},
-  {id:6,co:'GovTech Singapore',role:'Cybersecurity Associate',type:'Full-time',country:'Singapore',link:'https://careers.tech.gov.sg',status:'Want to Apply',date:'',followup:'',recruiter:'',salary:5000,match:92,notes:'Public sector, EP eligible'},
-  {id:7,co:'Darktrace',role:'Threat Analyst',type:'Full-time',country:'US',link:'https://darktrace.com/careers',status:'Want to Apply',date:'',followup:'',recruiter:'',salary:6500,match:80,notes:'AI security focus'},
-  {id:8,co:'NCS Group',role:'SOC Engineer',type:'Full-time',country:'Singapore',link:'https://ncs.co/careers',status:'Applied',date:'2025-01-08',followup:'2025-01-22',recruiter:'talent@ncs.co',salary:5500,match:87,notes:'Follow up end of Jan'},
-  {id:9,co:'Singtel Cyber Security',role:'Penetration Tester',type:'Full-time',country:'Singapore',link:'https://careers.singtel.com',status:'Want to Apply',date:'',followup:'',recruiter:'',salary:5800,match:89,notes:'VAPT role — strong match'},
-  {id:10,co:'Home Team Science & Tech',role:'Cyber Analyst Intern',type:'Internship',country:'Singapore',link:'https://www.htx.gov.sg/join-us',status:'Want to Apply',date:'',followup:'',recruiter:'',salary:1600,match:83,notes:'Govt security agency'},
-  {id:11,co:'Infosys',role:'Security Analyst',type:'Full-time',country:'India',link:'https://infosys.com/careers',status:'Want to Apply',date:'',followup:'',recruiter:'',salary:1200,match:78,notes:'India HQ, strong brand'},
-  {id:12,co:'Wipro CyberDefense',role:'SOC Analyst Intern',type:'Internship',country:'India',link:'https://wipro.com/careers',status:'Want to Apply',date:'',followup:'',recruiter:'',salary:800,match:74,notes:'Internship program'},
+const JOBS=[
+  {id:1,title:'SOC Analyst (L1/L2)',co:'ST Engineering',loc:'Singapore · On-site',match:95,salary:'SGD 3,500–5,500/mo',logo:'ST',lc:'#E6F1FB',tc:'#0C447C',
+    links:{mcf:'https://www.mycareersfuture.gov.sg/job/information-technology/soc-analyst-st-engineering-info-security-7bdf4327a6e75fda7b85dc13be4761bd',li:'https://sg.linkedin.com/company/st-engineering/jobs',main:'https://www.stengg.com/en/careers/'},src:'MyCareersFuture'},
+  {id:2,title:'Penetration Tester',co:'Horangi Cyber Security',loc:'Singapore · Hybrid',match:93,salary:'SGD 4,000–6,000/mo',logo:'HC',lc:'#FCEBEB',tc:'#791F1F',
+    links:{li:'https://sg.linkedin.com/jobs/view/penetration-tester-at-horangi-cyber-security',main:'https://www.horangi.com/careers'},src:'LinkedIn'},
+  {id:3,title:'Cybersecurity Analyst',co:'NCS Group',loc:'Singapore · Hybrid',match:90,salary:'SGD 3,800–5,500/mo',logo:'NC',lc:'#EAF3DE',tc:'#27500A',
+    links:{li:'https://sg.linkedin.com/company/ncs-group/jobs',main:'https://www.ncs.co/en-sg/careers/'},src:'LinkedIn'},
+  {id:4,title:'VAPT Analyst',co:'Ensign InfoSecurity',loc:'Singapore · On-site',match:88,salary:'SGD 4,000–6,500/mo',logo:'EI',lc:'#EEEDFE',tc:'#3C3489',
+    links:{main:'https://www.ensigninfosecurity.com/about/careers',li:'https://sg.linkedin.com/company/ensign-infosecurity/jobs'},src:'Company site'},
+  {id:5,title:'Security Analyst Intern',co:'GovTech Singapore',loc:'Singapore · Hybrid',match:87,salary:'SGD 2,000–2,800/mo',logo:'GT',lc:'#FAEEDA',tc:'#633806',
+    links:{main:'https://www.tech.gov.sg/careers/students-and-graduates/student-development-programmes/',li:'https://sg.linkedin.com/company/govtech-singapore/jobs'},src:'GovTech careers'},
+  {id:6,title:'Jr. Penetration Tester',co:'KPMG Singapore',loc:'Singapore · On-site',match:83,salary:'SGD 3,500–5,000/mo',logo:'KP',lc:'#FBEAF0',tc:'#72243E',
+    links:{main:'https://home.kpmg/sg/en/home/careers.html',li:'https://sg.linkedin.com/company/kpmg/jobs'},src:'KPMG careers'},
+  {id:7,title:'Threat Intelligence Analyst',co:'Cisco Systems SG',loc:'Singapore · Remote',match:80,salary:'SGD 4,000–6,000/mo',logo:'CS',lc:'#E1F5EE',tc:'#085041',
+    links:{main:'https://jobs.cisco.com/',li:'https://sg.linkedin.com/company/cisco/jobs'},src:'Cisco careers'},
+  {id:8,title:'Network Security Engineer',co:'Singtel',loc:'Singapore · On-site',match:78,salary:'SGD 3,500–5,000/mo',logo:'SL',lc:'#FAECE7',tc:'#712B13',
+    links:{main:'https://www.singtel.com/about-us/careers',li:'https://sg.linkedin.com/company/singtel/jobs'},src:'Singtel careers'},
+  {id:9,title:'Cloud Security Analyst',co:'DBS Bank',loc:'Singapore · Hybrid',match:75,salary:'SGD 4,000–5,500/mo',logo:'DB',lc:'#E6F1FB',tc:'#185FA5',
+    links:{main:'https://www.dbs.com/careers/',li:'https://sg.linkedin.com/company/dbs-bank/jobs'},src:'DBS careers'},
 ];
-let nid=13, curFilter='all', editId=null, currency='SGD', curTypeToggle='all', curCountry='all';
-let liveJobs=[];
-
-const FX={SGD:1,INR:62.5,USD:0.74};
-const SYM={SGD:'S$',INR:'₹',USD:'$'};
-const ACOL=[
-  {bg:'rgba(16,185,129,.18)',fg:'#10B981'},
-  {bg:'rgba(59,130,246,.18)',fg:'#3B82F6'},
-  {bg:'rgba(139,92,246,.18)',fg:'#8B5CF6'},
-  {bg:'rgba(245,158,11,.18)',fg:'#F59E0B'},
-  {bg:'rgba(6,182,212,.18)',fg:'#06B6D4'},
+const TRACKER=[
+  {title:'SOC Analyst (L1/L2)',co:'ST Engineering',date:'26 May 2025',status:'interview',match:95,url:'https://www.mycareersfuture.gov.sg/job/information-technology/soc-analyst-st-engineering-info-security-7bdf4327a6e75fda7b85dc13be4761bd'},
+  {title:'Penetration Tester',co:'Horangi',date:'24 May 2025',status:'replied',match:93,url:'https://sg.linkedin.com/company/horangi-cyber-security/jobs'},
+  {title:'Cybersecurity Analyst',co:'NCS Group',date:'22 May 2025',status:'applied',match:90,url:'https://www.ncs.co/en-sg/careers/'},
+  {title:'VAPT Analyst',co:'Ensign InfoSecurity',date:'20 May 2025',status:'applied',match:88,url:'https://www.ensigninfosecurity.com/about/careers'},
 ];
+const NOTIFS=[
+  {ico:'ti-mail',ibg:'#E6F1FB',ic:'#0C447C',title:'Interview invite — ST Engineering',sub:'Technical round scheduled for 30 May at 10:00 AM SGT',time:'1 hr ago',isnew:true},
+  {ico:'ti-brand-whatsapp',ibg:'#EAF3DE',ic:'#27500A',title:'WhatsApp: Horangi Cyber Security recruiter',sub:'"Hi Naveen, we reviewed your profile and would like to proceed…"',time:'4 hrs ago',isnew:true},
+  {ico:'ti-mail',ibg:'#E6F1FB',ic:'#0C447C',title:'Application update — NCS Group',sub:'Your profile is under review by the hiring team.',time:'1 day ago',isnew:true},
+  {ico:'ti-mail',ibg:'#FCEBEB',ic:'#791F1F',title:'Update — GovTech Singapore',sub:'We have shortlisted other candidates for this intake.',time:'2 days ago',isnew:false},
+];
+function mc(m){return m>=90?'#185FA5':m>=80?'#3B6D11':'#BA7517'}
 
-// ─── CURRENCY ────────────────────────────────────────────────────────────────
-function fmtSal(sgd){
-  if(!sgd)return '—';
-  return SYM[currency]+Math.round(sgd*FX[currency]).toLocaleString()+'/mo';
-}
-function setCurrency(c){
-  currency=c;
-  document.querySelectorAll('.cur-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('cur-'+c).classList.add('active');
-  render();
-  renderLiveJobs();
-}
-
-// ─── TYPE TOGGLE (Jobs / Internship) ─────────────────────────────────────────
-function setTypeToggle(t){
-  curTypeToggle=t;
-  ['all','job','intern'].forEach(k=>document.getElementById('toggle-'+k).classList.remove('active'));
-  const map={all:'toggle-all','Full-time':'toggle-job','Internship':'toggle-intern'};
-  document.getElementById(map[t]).classList.add('active');
-  // also sync the select filter
-  document.getElementById('qType').value = t==='all'?'all':t;
-  render();
-  renderLiveJobs();
-}
-
-// ─── COUNTRY FILTER ──────────────────────────────────────────────────────────
-function setCountry(c){
-  curCountry=c;
-  document.querySelectorAll('.country-btn').forEach(b=>b.classList.remove('active'));
-  const map={'all':'ctry-all','Singapore':'ctry-sg','India':'ctry-in','US':'ctry-us','Other':'ctry-other'};
-  document.getElementById(map[c]).classList.add('active');
-  render();
-  renderLiveJobs();
-}
-
-// ─── COLORS ──────────────────────────────────────────────────────────────────
-function matchColor(m){
-  if(m>=90)return'var(--green)';
-  if(m>=80)return'var(--blue)';
-  if(m>=70)return'var(--yellow)';
-  return'var(--red)';
-}
-function statusStyle(s){
-  const m={
-    Applied:{bg:'var(--green-bg)',border:'var(--green-border)',color:'var(--green)'},
-    'Want to Apply':{bg:'var(--yellow-bg)',border:'var(--yellow-border)',color:'var(--yellow)'},
-    Interview:{bg:'var(--blue-bg)',border:'var(--blue-border)',color:'var(--blue)'},
-    Offer:{bg:'var(--cyan-bg)',border:'rgba(6,182,212,.3)',color:'var(--cyan)'},
-    Rejected:{bg:'var(--red-bg)',border:'var(--red-border)',color:'var(--red)'},
-  };
-  return m[s]||m['Want to Apply'];
-}
-function initials(co){return co.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase()}
-
-// ─── STATS ───────────────────────────────────────────────────────────────────
-function updateStats(){
-  const cnt=s=>jobs.filter(j=>j.status===s).length;
-  document.getElementById('sn-total').textContent=jobs.length;
-  document.getElementById('sn-applied').textContent=cnt('Applied');
-  document.getElementById('sn-want').textContent=cnt('Want to Apply');
-  document.getElementById('sn-interview').textContent=cnt('Interview');
-  document.getElementById('sn-offer').textContent=cnt('Offer');
-  document.getElementById('sn-rejected').textContent=cnt('Rejected');
-  document.getElementById('sbc-all').textContent=jobs.length;
-  document.getElementById('sbc-want').textContent=cnt('Want to Apply');
-  document.getElementById('sbc-applied').textContent=cnt('Applied');
-  document.getElementById('sbc-interview').textContent=cnt('Interview');
-  document.getElementById('sbc-offer').textContent=cnt('Offer');
-  document.getElementById('sbc-rejected').textContent=cnt('Rejected');
-
-  const active=cnt('Applied')+cnt('Interview')+cnt('Offer')+cnt('Rejected');
-  const appR=jobs.length?Math.round(active/jobs.length*100):0;
-  const intR=active?Math.round(cnt('Interview')/active*100):0;
-  const avg=jobs.length?Math.round(jobs.reduce((a,j)=>a+(j.match||0),0)/jobs.length):0;
-  document.getElementById('pf-app').style.width=appR+'%';document.getElementById('pp-app').textContent=appR+'%';
-  document.getElementById('pf-int').style.width=intR+'%';document.getElementById('pp-int').textContent=intR+'%';
-  document.getElementById('pf-match').style.width=avg+'%';document.getElementById('pp-match').textContent=avg+'%';
-}
-
-// ─── OPENINGS ────────────────────────────────────────────────────────────────
-function renderOpenings(){
-  let want=[...jobs].filter(j=>j.status==='Want to Apply');
-  if(curTypeToggle!=='all') want=want.filter(j=>j.type===curTypeToggle);
-  if(curCountry!=='all') want=want.filter(j=>(j.country||'Singapore')===curCountry);
-  want.sort((a,b)=>(b.match||0)-(a.match||0));
-  document.getElementById('openings-count').textContent=want.length+' opening'+(want.length!==1?'s':'');
-  const grid=document.getElementById('openingsGrid');
-  if(!want.length){
-    grid.innerHTML='<div style="padding:20px 22px;color:var(--muted);font-size:13px">No pending openings for this filter.</div>';
-    return;
-  }
-  grid.innerHTML=want.map(j=>{
-    const mc=matchColor(j.match||0);
-    return `
-    <div class="opening-card">
-      <div class="oc-top">
-        <div><div class="oc-co">${j.co}</div><div class="oc-role">${j.role}</div></div>
-        <div class="match-ring" style="border-color:${mc};color:${mc}">${j.match||0}%</div>
+function jobCard(j, applyOnly=false){
+  const primaryUrl = j.links.mcf || j.links.main;
+  const liUrl = j.links.li;
+  return `<div class="job-card">
+    <div class="job-top">
+      <div class="job-logo" style="background:${j.lc};color:${j.tc}">${j.logo}</div>
+      <div class="job-info">
+        <div class="job-title">${j.title}</div>
+        <div class="job-meta">${j.co} &nbsp;·&nbsp; ${j.loc} &nbsp;·&nbsp; ${j.salary}</div>
       </div>
-      <div class="oc-row">
-        <span class="oc-type-pill">${j.type}</span>
-        <span class="oc-salary">${fmtSal(j.salary)}</span>
-        ${j.country?`<span style="font-size:10px;color:var(--cyan);font-family:var(--mono)">${countryFlag(j.country)} ${j.country}</span>`:''}
+      <div class="match-col">
+        <div class="match-pct" style="color:${mc(j.match)}">${j.match}%</div>
+        <div class="mbar"><div class="mfill" style="width:${j.match}%;background:${mc(j.match)}"></div></div>
       </div>
-      ${j.notes?`<div class="oc-notes">${j.notes}</div>`:''}
-      ${j.link
-        ?`<a class="apply-now-btn" href="${j.link}" target="_blank">🔗 Apply now</a>`
-        :`<div class="no-link-msg">No apply link added yet</div>`}
-    </div>`;
-  }).join('');
+    </div>
+    <div class="job-actions">
+      <a href="${primaryUrl}" class="btn green" target="_blank" rel="noopener"><i class="ti ti-external-link" aria-hidden="true"></i>Apply now</a>
+      ${liUrl ? `<a href="${liUrl}" class="btn" target="_blank" rel="noopener"><i class="ti ti-brand-linkedin" aria-hidden="true"></i>LinkedIn</a>` : ''}
+      ${!applyOnly ? `<button class="btn" onclick="sendPrompt('Tell me about the ${j.title} role at ${j.co} in Singapore and how I should prepare for the interview as a cybersecurity analyst with VAPT and SOC experience')"><i class="ti ti-info-circle" aria-hidden="true"></i>Prep tips ↗</button>` : ''}
+      <span class="src-tag"><i class="ti ti-check" aria-hidden="true" style="font-size:11px"></i> ${j.src}</span>
+    </div>
+  </div>`;
 }
 
-function countryFlag(c){
-  const f={Singapore:'🇸🇬',India:'🇮🇳',US:'🇺🇸',Other:'🌏'};
-  return f[c]||'🌐';
+document.getElementById('dash-jobs').innerHTML = JOBS.slice(0,3).map(j=>jobCard(j)).join('');
+document.getElementById('all-jobs').innerHTML = JOBS.map(j=>jobCard(j)).join('');
+document.getElementById('apply-list').innerHTML = JOBS.map(j=>jobCard(j,true)).join('');
+
+document.getElementById('tracker-rows').innerHTML = TRACKER.map(t=>`
+  <div class="track-row">
+    <div><div style="font-weight:500">${t.title}</div><div style="font-size:11px;color:var(--color-text-secondary)">${t.co}</div></div>
+    <div style="color:var(--color-text-secondary);font-size:11px">${t.date}</div>
+    <div><span class="pill p-${t.status}">${t.status.charAt(0).toUpperCase()+t.status.slice(1)}</span></div>
+    <div style="color:${mc(t.match)};font-weight:500">${t.match}%</div>
+    <div><a href="${t.url}" class="btn sm green" target="_blank" rel="noopener"><i class="ti ti-external-link" aria-hidden="true"></i>Apply</a></div>
+  </div>`).join('');
+
+document.getElementById('notif-list').innerHTML = NOTIFS.map(n=>`
+  <div class="notif-item">
+    <div class="notif-ico" style="background:${n.ibg}"><i class="ti ${n.ico}" style="color:${n.ic}" aria-hidden="true"></i></div>
+    <div style="flex:1">
+      <div class="notif-title">${n.isnew?'<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#185FA5;margin-right:5px;vertical-align:2px"></span>':''}${n.title}</div>
+      <div class="notif-sub">${n.sub}</div>
+    </div>
+    <div class="notif-time">${n.time}</div>
+  </div>`).join('');
+
+function go(id,el){
+  document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  el.classList.add('active');
 }
-
-// ─── FILTERED LIST ────────────────────────────────────────────────────────────
-function getFiltered(){
-  const q=document.getElementById('qSearch').value.toLowerCase();
-  const sf=document.getElementById('qStatus').value;
-  const tf=document.getElementById('qType').value;
-  const so=document.getElementById('qSort').value;
-  let list=jobs.filter(j=>{
-    const mq=!q||(j.co+j.role+(j.notes||'')+(j.recruiter||'')).toLowerCase().includes(q);
-    const ms=sf==='all'||j.status===sf;
-    const mt=tf==='all'||j.type===tf;
-    const mf=curFilter==='all'||j.status===curFilter;
-    // country filter
-    const mc2=curCountry==='all'||(j.country||'Singapore')===curCountry;
-    // type toggle
-    const mtt=curTypeToggle==='all'||j.type===curTypeToggle;
-    return mq&&ms&&mt&&mf&&mc2&&mtt;
-  });
-  if(so==='match')list.sort((a,b)=>(b.match||0)-(a.match||0));
-  else if(so==='date')list.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-  else list.sort((a,b)=>a.co.localeCompare(b.co));
-  return list;
-}
-
-function render(){
-  updateStats();
-  renderOpenings();
-  const list=getFiltered();
-  const el=document.getElementById('jobsList');
-  const noR=document.getElementById('noResults');
-  let label=curFilter==='all'?'All applications':curFilter;
-  if(curTypeToggle!=='all') label+=' — '+curTypeToggle+'s';
-  if(curCountry!=='all') label+=' in '+curCountry;
-  document.getElementById('listLabel').textContent=label;
-  if(!list.length){el.innerHTML='';noR.style.display='block';return;}
-  noR.style.display='none';
-  el.innerHTML=list.map((j,i)=>{
-    const ac=ACOL[i%5];
-    const ss=statusStyle(j.status);
-    const mc=matchColor(j.match||0);
-    return `
-    <div class="job-card">
-      <div class="jc-main">
-        <div class="jc-avatar" style="background:${ac.bg};color:${ac.fg}">${initials(j.co)}</div>
-        <div class="jc-info">
-          <div class="jc-top">
-            <div>
-              <div class="jc-co">${j.co} ${j.country?`<span style="font-size:11px">${countryFlag(j.country)}</span>`:''}</div>
-              <div class="jc-role">${j.role}</div>
-            </div>
-            <div class="jc-right">
-              <span class="status-badge" style="background:${ss.bg};border:1px solid ${ss.border};color:${ss.color}">${j.status}</span>
-              <span class="type-tag">${j.type}</span>
-            </div>
-          </div>
-          <div class="jc-meta">
-            ${j.match?`<div class="match-bar-wrap"><div class="match-mini"><div class="match-fill" style="width:${j.match}%;background:${mc}"></div></div><span class="match-val" style="color:${mc}">${j.match}%</span></div>`:''}
-            ${j.salary?`<div class="meta">💰 ${fmtSal(j.salary)}</div>`:''}
-            ${j.date?`<div class="meta">📅 ${j.date}</div>`:''}
-            ${j.followup?`<div class="meta" style="color:var(--yellow)">🔔 ${j.followup}</div>`:''}
-            ${j.notes?`<div class="meta" style="max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">📝 ${j.notes}</div>`:''}
-          </div>
-        </div>
-      </div>
-      <div class="jc-actions">
-        ${j.link?`<button class="jc-act apply-act" onclick="window.open('${j.link}','_blank')">🔗 Apply link</button>`:''}
-        ${j.recruiter?`<button class="jc-act mail-act" onclick="mailTo('${j.recruiter}','${j.co}','${j.role}')">✉ Mail recruiter</button>`:''}
-        <button class="jc-act" onclick="openEdit(${j.id})">✏ Update</button>
-        <button class="jc-act del-act" onclick="delJob(${j.id})">🗑 Delete</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// ─── LIVE JOB FETCH (via Claude AI) ─────────────────────────────────────────
-async function fetchLiveJobs(){
-  const btn=document.getElementById('liveRefreshBtn');
-  btn.disabled=true;btn.textContent='⏳ Fetching…';
-  document.getElementById('liveJobsContainer').innerHTML=`
-    <div class="live-loading">
-      <div class="live-spinner"></div>
-      <div>Searching the internet for cybersecurity jobs & internships…</div>
-    </div>`;
-
-  const typeHint = curTypeToggle==='Internship'?'internships only':curTypeToggle==='Full-time'?'full-time jobs only':'jobs and internships';
-  const countryHint = curCountry==='all'?'Singapore, India, US, and other countries':curCountry;
-
-  const today=new Date().toISOString().slice(0,10);
-  const prompt=`You are a cybersecurity job search assistant. Today is ${today}.
-Search and list the latest REAL cybersecurity ${typeHint} currently available in ${countryHint}.
-Focus on roles like: SOC Analyst, Penetration Tester, Security Engineer, Threat Analyst, VAPT, GRC, Cloud Security, Cyber Analyst, Security Architect.
-Return ONLY a JSON array (no explanation, no markdown, no backticks) of 12–18 job objects with exactly these fields:
-- co: company name (string)
-- role: job title (string)  
-- type: "Full-time" or "Internship" (string)
-- country: "Singapore" or "India" or "US" or "Other" (string)
-- salary: estimated monthly salary in SGD as integer (0 if unknown)
-- match: match score for a fresh cybersecurity graduate, 0-100 integer
-- notes: 1 sentence about the role/company (string)
-- link: real careers page URL (string, use actual company careers page)
-Include a mix of well-known companies (Cisco, Palo Alto, CrowdStrike, Mandiant, GovTech, Ensign, IMDA, Infosys, Wipro, TCS, HCL, Accenture, KPMG, Deloitte, IBM Security, Microsoft Security, Google Security, etc.) plus smaller specialized firms. Make the data realistic and varied. Return ONLY the JSON array.`;
-
-  try {
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:4000,
-        tools:[{type:'web_search_20250305',name:'web_search'}],
-        messages:[{role:'user',content:prompt}]
-      })
-    });
-    const data=await res.json();
-    // extract text from all content blocks
-    const text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
-    // strip any markdown fences
-    const clean=text.replace(/```json|```/g,'').trim();
-    // find JSON array
-    const match=clean.match(/\[[\s\S]*\]/);
-    if(!match)throw new Error('No JSON array in response');
-    let fetched=JSON.parse(match[0]);
-    liveJobs=fetched.map((j,i)=>({...j,_id:'live_'+i}));
-    document.getElementById('liveUpdated').textContent='· Updated '+new Date().toLocaleTimeString();
-    renderLiveJobs();
-    showToast('✅ Fetched '+liveJobs.length+' live jobs!');
-  } catch(e){
-    console.error(e);
-    document.getElementById('liveJobsContainer').innerHTML=`<div class="live-empty">⚠️ Could not fetch live jobs. Make sure you are connected to the internet and try again.<br><small style="color:var(--dim)">${e.message}</small></div>`;
-    showToast('Failed to fetch jobs. Try again.');
-  }
-  btn.disabled=false;btn.textContent='🔄 Refresh Now';
-}
-
-function renderLiveJobs(){
-  const container=document.getElementById('liveJobsContainer');
-  let list=[...liveJobs];
-  // apply type toggle
-  if(curTypeToggle!=='all') list=list.filter(j=>j.type===curTypeToggle);
-  // apply country filter
-  if(curCountry!=='all') list=list.filter(j=>j.country===curCountry);
-
-  document.getElementById('liveCount').textContent=list.length+' job'+(list.length!==1?'s':'');
-
-  if(!list.length && liveJobs.length>0){
-    container.innerHTML=`<div class="live-empty">No live jobs match the current country/type filter. Try changing your filters above.</div>`;
-    return;
-  }
-  if(!list.length){
-    container.innerHTML=`<div class="live-empty">Click <strong>Refresh Now</strong> to load the latest cybersecurity jobs from the internet.</div>`;
-    return;
-  }
-
-  container.innerHTML=`<div class="live-grid">${list.map(j=>`
-    <div class="live-card">
-      <div class="lc-top">
-        <div>
-          <div class="lc-co">${j.co}</div>
-          <div class="lc-role">${j.role}</div>
-        </div>
-        <span class="lc-country-tag">${countryFlag(j.country)} ${j.country}</span>
-      </div>
-      <div class="lc-row">
-        <span class="lc-type-pill ${j.type==='Internship'?'lc-type-intern':'lc-type-full'}">${j.type}</span>
-        <span class="lc-salary">${fmtSal(j.salary)}</span>
-        ${j.match?`<span style="font-size:11px;font-family:var(--mono);color:${matchColor(j.match)};font-weight:700">${j.match}% match</span>`:''}
-      </div>
-      ${j.notes?`<div class="lc-notes">${j.notes}</div>`:''}
-      <div class="lc-actions">
-        ${j.link?`<a class="lc-apply-btn" href="${j.link}" target="_blank">🔗 Apply</a>`:''}
-        <button class="lc-save-btn" onclick="saveFromLive(${JSON.stringify(j).replace(/"/g,'&quot;')})">⭐ Save to tracker</button>
-      </div>
-    </div>`).join('')}</div>`;
-}
-
-function saveFromLive(j){
-  const obj={
-    id:nid++,co:j.co,role:j.role,type:j.type,
-    country:j.country||'Other',
-    link:j.link||'',salary:j.salary||0,
-    match:j.match||0,notes:j.notes||'',
-    status:'Want to Apply',date:'',followup:'',recruiter:''
-  };
-  jobs.push(obj);
-  render();
-  showToast('⭐ Saved: '+j.co+' → '+j.role);
-}
-
-// ─── SIDE FILTER ─────────────────────────────────────────────────────────────
-function sideFilter(s){
-  curFilter=s;
-  document.querySelectorAll('.sb-item').forEach(el=>el.classList.remove('active'));
-  const sid={'all':'sb-all','Want to Apply':'sb-want','Applied':'sb-applied','Interview':'sb-interview','Offer':'sb-offer','Rejected':'sb-rejected'};
-  if(sid[s])document.getElementById(sid[s]).classList.add('active');
-  document.querySelectorAll('.stat-card').forEach(el=>el.classList.remove('active'));
-  const scid={'all':'sc-all','Applied':'sc-applied','Want to Apply':'sc-want','Interview':'sc-interview','Offer':'sc-offer','Rejected':'sc-rejected'};
-  if(scid[s])document.getElementById(scid[s]).classList.add('active');
-  document.getElementById('qStatus').value=s==='all'?'all':s;
-  render();
-}
-
-// ─── EMAIL ───────────────────────────────────────────────────────────────────
-function mailMe(){window.location.href='mailto:naveenmknmurugan@gmail.com'}
-function mailTo(email,co,role){
-  const sub=`Follow-up: ${role} at ${co}`;
-  const body=`Dear Hiring Team,\n\nI am writing to follow up on my application for the ${role} position at ${co}.\n\nI remain very interested in this opportunity and would love the chance to discuss further.\n\nBest regards,\nNaveen M\nnaveenmknmurugan@gmail.com\n+91 93604 23961`;
-  window.location.href=`mailto:${email}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`;
-}
-
-// ─── MODAL ───────────────────────────────────────────────────────────────────
-function openModal(){
-  editId=null;
-  document.getElementById('modalTitle').textContent='Add application';
-  document.getElementById('fId').value='';
-  ['fCo','fRole','fLink','fDate','fFollowup','fRecruiter','fNotes'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('fSalary').value='';
-  document.getElementById('fMatch').value='';
-  document.getElementById('fType').value='Full-time';
-  document.getElementById('fStatus').value='Want to Apply';
-  document.getElementById('fCountry').value='Singapore';
-  document.getElementById('modalOverlay').classList.add('open');
-}
-function openEdit(id){
-  const j=jobs.find(x=>x.id===id);if(!j)return;
-  editId=id;
-  document.getElementById('modalTitle').textContent='Update application';
-  document.getElementById('fId').value=id;
-  document.getElementById('fCo').value=j.co||'';
-  document.getElementById('fRole').value=j.role||'';
-  document.getElementById('fType').value=j.type||'Full-time';
-  document.getElementById('fStatus').value=j.status||'Want to Apply';
-  document.getElementById('fCountry').value=j.country||'Singapore';
-  document.getElementById('fLink').value=j.link||'';
-  document.getElementById('fSalary').value=j.salary||'';
-  document.getElementById('fDate').value=j.date||'';
-  document.getElementById('fFollowup').value=j.followup||'';
-  document.getElementById('fRecruiter').value=j.recruiter||'';
-  document.getElementById('fMatch').value=j.match||'';
-  document.getElementById('fNotes').value=j.notes||'';
-  document.getElementById('modalOverlay').classList.add('open');
-}
-function closeModal(){document.getElementById('modalOverlay').classList.remove('open')}
-function closeModalOutside(e){if(e.target.id==='modalOverlay')closeModal()}
-
-function saveEntry(){
-  const co=document.getElementById('fCo').value.trim();
-  const role=document.getElementById('fRole').value.trim();
-  if(!co||!role){showToast('Company and Role are required!');return;}
-  const obj={co,role,
-    type:document.getElementById('fType').value,
-    status:document.getElementById('fStatus').value,
-    country:document.getElementById('fCountry').value,
-    link:document.getElementById('fLink').value.trim(),
-    salary:parseInt(document.getElementById('fSalary').value)||0,
-    date:document.getElementById('fDate').value,
-    followup:document.getElementById('fFollowup').value,
-    recruiter:document.getElementById('fRecruiter').value.trim(),
-    match:parseInt(document.getElementById('fMatch').value)||0,
-    notes:document.getElementById('fNotes').value.trim(),
-  };
-  if(editId){const i=jobs.findIndex(j=>j.id===editId);if(i>-1)jobs[i]={...jobs[i],...obj};showToast('Updated!');}
-  else{obj.id=nid++;jobs.push(obj);showToast('Application added!');}
-  closeModal();render();
-}
-
-function delJob(id){
-  if(!confirm('Delete this application?'))return;
-  jobs=jobs.filter(j=>j.id!==id);render();showToast('Deleted.');
-}
-
-// ─── EXPORT ──────────────────────────────────────────────────────────────────
-function exportCSV(){
-  const h=['Company','Role','Type','Country','Status','Apply Link','Salary SGD','Match %','Date Applied','Follow-up','Recruiter','Notes'];
-  const rows=jobs.map(j=>[j.co,j.role,j.type,j.country||'',j.status,j.link,j.salary,j.match,j.date,j.followup,j.recruiter,j.notes].map(v=>'"'+(v||'')+'"').join(','));
-  const csv=[h.join(','),...rows].join('\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='Naveen_JobTracker.csv';a.click();
-  showToast('CSV exported!');
-}
-
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
-
-// ─── INIT ─────────────────────────────────────────────────────────────────────
-render();
 </script>
-</body>
-</html>
